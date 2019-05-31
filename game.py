@@ -11,7 +11,7 @@ if __name__=="__main__":
     John = ch.Player(name="John")
     Henry = ch.Monster(name="Henry",health=3)
     
-    for i in range(100):
+    for i in range(500):
         ch.Monster(attack=random.randint(10,50))
     
     for x in range(300):
