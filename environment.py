@@ -20,7 +20,7 @@ class MapFrame():
         self.players=list()
         self.neighbours=dict()
         
-    def SetNeighbours(self,x=None,y=None,direction=None):
+    def set_neighbours(self,x=None,y=None,direction=None):
         if direction is None:
             self.neighbours["north"]=MapFrame.MapFramesCoors.get((self.x,self.y+1))
             self.neighbours["south"]=MapFrame.MapFramesCoors.get((self.x,self.y-1))
@@ -32,12 +32,24 @@ class MapFrame():
     @staticmethod
     def GetNeighbours():
         for mapframe in MapFrame.MapFrames:
-            mapframe.SetNeighbours()
-            
-def MakeWorld(x,y):
-    for i in range(x):
-        for j in range(y):
-            MapFrame(i,j)
+            mapframe.set_neighbours()
+    
+    @staticmethod        
+    def MakeWorld(x,y):
+        for i in range(x):
+            for j in range(y):
+                MapFrame(i,j)
+                
+class GameObject():
+    game_objects=list()
+    
+    def __init__(self, room = None):
+        if not MapFrame.MapFrames:
+            MapFrame(1,1)
+            """This is to prevent creation of GameObjects 
+            before at least one MapFrame was instantiated."""
+        self.game_objects.append(self)
+        self.room = room if room is not None else random.choice(MapFrame.MapFrames)
 #############################################################################################
 class Battle():
     def fight(attacker, defender):
