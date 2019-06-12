@@ -2,7 +2,7 @@ import random
 import environment as en
 import weapon as we
 
-class Character():
+class Character(en.GameObject):
     
     Characters = list()
     
