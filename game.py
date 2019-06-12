@@ -5,7 +5,7 @@ import random
 
 if __name__=="__main__":
 #    first instantiate room
-    en.MakeWorld(30,30)
+    en.MapFrame.MakeWorld(30,30)
     en.MapFrame.GetNeighbours()
     
     John = ch.Player(name="John")
