@@ -28,16 +28,15 @@ weapon_types = {"dagger":3,
                 "scimitar":30
                 }
 
-class Weapon():
+class Weapon(en.GameObject):
     def __init__(self, material=None, weapon_type=None, room = None):
+        super().__init__(room)
         self.material = material if material is not None else choices(list(materials),list(materials_probs))[0]
         self.weapon_type = weapon_type if weapon_type is not None else choices(list(weapon_types),list(weapon_types_probs))[0]
         self.name = f"{self.material} {self.weapon_type}"
         self.att_bonus = materials[self.material] + weapon_types[self.weapon_type]
         
-        self.room = room if room is not None else random.choice(en.MapFrame.MapFrames)
-        self.room.items.append(self)
-        
+
 
 
 

@@ -2,9 +2,14 @@ import random
 from random import choices
 import environment as en
 
-class FoodOrDrink():
+import threading
+import time
+
+class Food(en.GameObject):
     def __init__(self, room = None):
-        self.room = room if room is not None else random.choice(en.MapFrame.MapFrames)
+        super().__init__(room=room)
         
-class Food(FoodOrDrink):
-    def __init__(self, room = None)
+        #few types of food - each heals different
+        
+        #potions - increases  
+        

@@ -6,8 +6,9 @@ class Character():
     
     Characters = list()
     
-    def __init__(self,level=1,health=100,attack=1,strength=1,defence=1):
+    def __init__(self,room=None,level=1,health=100,attack=1,strength=1,defence=1):
         Character.Characters.append(self)
+        super().__init__(room)
         self.level = level
         self.health = health
         self.attack = attack
@@ -21,14 +22,12 @@ class Player(Character):
     
     def __init__(self,name=None,room=None,level=1,health=100,attack=1,strength=1,defence=1):
         Player.Players.append(self)
-        super().__init__(level,health,attack,strength,defence)
+        super().__init__(room,level,health,attack,strength,defence)
         self.name = name
         print(f"Hey There, I am new character called {self.name}.")
         self.inventory=list()
         self.wielded_weapon = None
-        self.room = room if room is not None else random.choice(en.MapFrame.MapFrames)
-        if self.room is not None:
-            self.room.players.append(self)
+        self.room.players.append(self)
         
     def pickup(self, item):
         if len(self.inventory) == 3:
@@ -97,13 +96,11 @@ class Monster(Character):
         
     def __init__(self,name=None,room=None,level=1,health=100,attack=1,strength=1,defence=1):
         Monster.Monsters.append(self)
-        super().__init__(level,health,attack,strength,defence)
+        super().__init__(room,level,health,attack,strength,defence)
         self.name = name if name is not None else "Monster"+str(len(Monster.Monsters))
         print(f"Hey There, I am new monster called {self.name}.")
         self.inventory=list()
-        self.room = room if room is not None else random.choice(en.MapFrame.MapFrames)
-        if self.room is not None:
-            self.room.monsters.append(self)
+        self.room.monsters.append(self)
             
     def fight(self, other):
         pass
