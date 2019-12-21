@@ -35,7 +35,7 @@ class Weapon(en.GameObject):
         self.weapon_type = weapon_type if weapon_type is not None else choices(list(weapon_types),list(weapon_types_probs))[0]
         self.name = f"{self.material} {self.weapon_type}"
         self.att_bonus = materials[self.material] + weapon_types[self.weapon_type]
-        
+        self.room.items.append(self)
 
 
 
