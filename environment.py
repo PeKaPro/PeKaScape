@@ -3,11 +3,13 @@ import time
 
 
 class MapFrame:
-    
+
+    """This is the basic world element
+    to incorporate the player-environment interaction"""
+
     MapFrames = list()
     MapFramesCoors = dict()
-    """This is the basic world element 
-    to incorporate the player-environment interaction"""
+
     def __init__(self, x, y):
         
         MapFrame.MapFrames.append(self)

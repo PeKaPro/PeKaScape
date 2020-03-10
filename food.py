@@ -1,9 +1,8 @@
-import random 
-from random import choices
+
 import environment as en
 
-import threading
-import time
+# import threading - for future development of potions feature
+# import time - likewise
 
 _healing_factors = {"Bread": 3,
                     "Apple": 1,
