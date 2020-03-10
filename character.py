@@ -3,13 +3,14 @@ import environment as en
 import weapon as we
 from base import PlayerGameText
 
-#future todo: move printed texts into special enums in base modules
+# future todo: move printed texts into special enums in base modules
+
 
 class Character(en.GameObject):
     
     Characters = list()
     
-    def __init__(self,room=None,level=1,health=100,attack=1,strength=1,defence=1):
+    def __init__(self, room=None, level=1, health=100, attack=1, strength=1, defence=1):
         Character.Characters.append(self)
         super().__init__(room)
         self.level = level
@@ -17,7 +18,8 @@ class Character(en.GameObject):
         self.attack = attack
         self.strength = strength
         self.defence = defence
-        
+
+
 #############################################################################################
 class Player(Character):
     
@@ -46,9 +48,9 @@ class Player(Character):
         if item in [x.name for x in self.room.items]:
             y=[x for x in self.room.items if x.name==item][0]
             print(y)
-            #self.inventory.append([x for x in self.room.items if x.name==item][0])
+            # self.inventory.append([x for x in self.room.items if x.name==item][0])
             self.inventory.append(y)
-            #self.room.items.remove([x for x in self.room.items if x.name==item][0])
+            # self.room.items.remove([x for x in self.room.items if x.name==item][0])
             self.room.items.remove(y)
             print(f"I have picked up {y.name}.")
             if isinstance(y,we.Weapon):
@@ -93,7 +95,7 @@ class Player(Character):
         else:
             cil.players.append(self)
             self.room.players.remove(self)
-            self.room=cil
+            self.room = cil
     
         
 #############################################################################################
@@ -116,7 +118,6 @@ class Monster(Character):
         print(f"Deleting {self.name}")
         while self.inventory:
             self.room.items.append(self.inventory.pop())
-        self.room.monsters.remove(self) #odstranim z mistnosti
-        type(self).Monsters.remove(self) # odstranim z monster
-        Character.Characters.remove(self) # odstranim z postav
-
+        self.room.monsters.remove(self)     # remove from the room
+        type(self).Monsters.remove(self)    # remove from monsters list
+        Character.Characters.remove(self)   # remove from characters list

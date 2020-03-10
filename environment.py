@@ -2,24 +2,24 @@ import random
 import time
 
 
-class MapFrame():
+class MapFrame:
     
     MapFrames = list()
     MapFramesCoors = dict()
     """This is the basic world element 
     to incorporate the player-environment interaction"""
-    def __init__(self,x,y):
+    def __init__(self, x, y):
         
         MapFrame.MapFrames.append(self)
-        MapFrame.MapFramesCoors[(x,y)]=self
+        MapFrame.MapFramesCoors[(x, y)] = self
         
         self.x = x 
         self.y = y 
         
-        self.items=list()
-        self.monsters=list()
-        self.players=list()
-        self.neighbours=dict()
+        self.items = list()
+        self.monsters = list()
+        self.players = list()
+        self.neighbours = dict()
         
     def set_neighbours(self,x=None,y=None,direction=None):
         if direction is None:
@@ -39,7 +39,7 @@ class MapFrame():
     def make_world(x, y):
         for i in range(x):
             for j in range(y):
-                MapFrame(i,j)
+                MapFrame(i, j)
 
 
 class GameObject:
@@ -52,9 +52,12 @@ class GameObject:
             before at least one MapFrame was instantiated."""
         self.game_objects.append(self)
         self.room = room if room is not None else random.choice(MapFrame.MapFrames)
-        
+
+
 #############################################################################################
 class Battle:
+
+    @staticmethod
     def fight(attacker, defender):
         if hasattr(attacker, "fight") & hasattr(defender, "fight"):
             # formula
