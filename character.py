@@ -1,6 +1,9 @@
 import random
 import environment as en
 import weapon as we
+from base import PlayerGameText
+
+#future todo: move printed texts into special enums in base modules
 
 class Character(en.GameObject):
     
@@ -20,16 +23,20 @@ class Player(Character):
     
     Players = list()
     
-    def __init__(self,name=None,room=None,level=1,health=100,attack=1,strength=1,defence=1):
+    def __init__(self, name=None, room=None, level=1, health=100, attack=1, strength=1, defence=1):
         Player.Players.append(self)
-        super().__init__(room,level,health,attack,strength,defence)
+        super().__init__(room, level, health, attack, strength, defence)
         self.name = name
         print(f"Hey There, I am new character called {self.name}.")
         self.inventory=list()
         self.wielded_weapon = None
         self.room.players.append(self)
+        self.alive = 1
         
     def pickup(self, item):
+        if not self.alive:
+            print(PlayerGameText.DEAD_INVOKE_ACTION)
+            return
         if len(self.inventory) == 3:
             print(f"I cant pick up anything, I am fully loaded.\nDrop something first.")
             return
@@ -94,19 +101,17 @@ class Monster(Character):
     
     Monsters = list()
         
-    def __init__(self,name=None,room=None,level=1,health=100,attack=1,strength=1,defence=1):
+    def __init__(self, name=None, room=None, level=1, health=100, attack=1, strength=1, defence=1):
         Monster.Monsters.append(self)
-        super().__init__(room,level,health,attack,strength,defence)
+        super().__init__(room, level, health, attack, strength, defence)
         self.name = name if name is not None else "Monster"+str(len(Monster.Monsters))
         print(f"Hey There, I am new monster called {self.name}.")
-        self.inventory=list()
+        self.inventory = list()
         self.room.monsters.append(self)
             
     def fight(self, other):
         pass
-            
-    
-    
+
     def __del__(self):
         print(f"Deleting {self.name}")
         while self.inventory:
