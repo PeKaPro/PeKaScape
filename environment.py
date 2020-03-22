@@ -1,3 +1,14 @@
+"""
+Module to represent basic environment concepts
+1. notion of physical space
+    Basic class is MapFrame as a unit of space
+    Mapframes can be connected
+
+2. Class battle
+    Wrapper - very static class defining the battle logic
+
+"""
+
 import random
 import time
 
@@ -25,12 +36,12 @@ class MapFrame:
         
     def set_neighbours(self,x=None,y=None,direction=None):
         if direction is None:
-            self.neighbours["north"]=MapFrame.MapFramesCoors.get((self.x,self.y+1))
-            self.neighbours["south"]=MapFrame.MapFramesCoors.get((self.x,self.y-1))
-            self.neighbours["east"]=MapFrame.MapFramesCoors.get((self.x+1,self.y))
-            self.neighbours["west"]=MapFrame.MapFramesCoors.get((self.x-1,self.y))
+            self.neighbours["north"] = MapFrame.MapFramesCoors.get((self.x,self.y+1))
+            self.neighbours["south"] = MapFrame.MapFramesCoors.get((self.x,self.y-1))
+            self.neighbours["east"] = MapFrame.MapFramesCoors.get((self.x+1,self.y))
+            self.neighbours["west"] = MapFrame.MapFramesCoors.get((self.x-1,self.y))
         else:
-            self.neighbours[direction]=MapFrame.MapFramesCoors.get((x,y))
+            self.neighbours[direction] = MapFrame.MapFramesCoors.get((x,y))
         
     @staticmethod
     def get_neighbours():

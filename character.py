@@ -1,3 +1,10 @@
+"""
+Module defining basic agents of the game
+1. Character as a very generic class
+2. Player as a class meant to represent human player
+3. Monster as a class of NPC enemies
+"""
+
 import environment as en
 import weapon as we
 from base import PlayerGameText
@@ -43,7 +50,7 @@ class Player(Character):
             print(f"I cant pick up {item} as its not in this room.\n")
             return
         if item in [x.name for x in self.room.items]:
-            y=[x for x in self.room.items if x.name == item][0]
+            y = [x for x in self.room.items if x.name == item][0]
             print(y)
             # self.inventory.append([x for x in self.room.items if x.name==item][0])
             self.inventory.append(y)

@@ -1,3 +1,10 @@
+"""
+Base module defining elements used by other modules
+
+As it is newly created, things will be transferred here eventually
+
+"""
+
 from enum import Enum
 
 

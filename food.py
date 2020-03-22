@@ -1,3 +1,6 @@
+"""
+Module incorporating food and other consumables and logic around it
+"""
 
 import environment as en
 

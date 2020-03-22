@@ -1,4 +1,9 @@
-import random 
+"""
+Module meant to define weapons
+
+"""
+
+import random
 from random import choices
 import environment as en
 
