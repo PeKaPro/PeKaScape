@@ -4,7 +4,7 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
-
+import base
 import environment as en
 import weapon as we
 from base import PlayerGameText
@@ -12,7 +12,7 @@ from base import PlayerGameText
 # future todo: move printed texts into special enums in base modules
 
 
-class Character(en.GameObject):
+class Character(base.GameObject):
     Characters = list()
     
     def __init__(self, room=None, level=1, health=100, attack=1, strength=1, defence=1):

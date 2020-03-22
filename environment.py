@@ -52,17 +52,6 @@ class MapFrame:
                 MapFrame(i, j)
 
 
-class GameObject:
-    game_objects = list()
-    
-    def __init__(self, room = None):
-        if not MapFrame.MapFrames:
-            MapFrame(1, 1)
-            # This is to prevent creation of GameObjects before at least one MapFrame was instantiated.
-        self.game_objects.append(self)
-        self.room = room if room is not None else random.choice(MapFrame.MapFrames)
-
-
 class Battle:
     """
     Class defining the battle logic - currently very simple

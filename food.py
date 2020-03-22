@@ -1,7 +1,7 @@
 """
 Module incorporating food and other consumables and logic around it
 """
-
+import base
 import environment as en
 
 # import threading - for future development of potions feature
@@ -12,7 +12,7 @@ _healing_factors = {"Bread": 3,
                     "Fish": 5}
 
 
-class Food(en.GameObject):
+class Food(base.GameObject):
     def __init__(self, room = None):
         super().__init__(room = room)
 

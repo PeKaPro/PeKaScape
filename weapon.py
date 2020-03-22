@@ -4,6 +4,8 @@ Module meant to define weapons
 """
 
 from random import choices
+
+import base
 import environment as en
 
 materials_probs = {10: "wood",
@@ -29,7 +31,7 @@ weapon_types = {"dagger": 3,
                 "scimitar": 30}
 
 
-class Weapon(en.GameObject):
+class Weapon(base.GameObject):
     def __init__(self, material = None, weapon_type = None, room = None):
         super().__init__(room)
         self.material = material if material is not None else choices(list(materials), list(materials_probs))[0]
