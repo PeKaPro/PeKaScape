@@ -6,15 +6,12 @@ Module to represent basic environment concepts
 
 2. Class battle
     Wrapper - very static class defining the battle logic
-
 """
-
 import random
 import time
 
 
 class MapFrame:
-
     """This is the basic world element
     to incorporate the player-environment interaction"""
 
@@ -34,14 +31,14 @@ class MapFrame:
         self.players = list()
         self.neighbours = dict()
         
-    def set_neighbours(self,x=None,y=None,direction=None):
+    def set_neighbours(self, x=None, y=None, direction=None):
         if direction is None:
-            self.neighbours["north"] = MapFrame.MapFramesCoors.get((self.x,self.y+1))
-            self.neighbours["south"] = MapFrame.MapFramesCoors.get((self.x,self.y-1))
-            self.neighbours["east"] = MapFrame.MapFramesCoors.get((self.x+1,self.y))
-            self.neighbours["west"] = MapFrame.MapFramesCoors.get((self.x-1,self.y))
+            self.neighbours["north"] = MapFrame.MapFramesCoors.get((self.x, self.y+1))
+            self.neighbours["south"] = MapFrame.MapFramesCoors.get((self.x, self.y-1))
+            self.neighbours["east"] = MapFrame.MapFramesCoors.get((self.x+1, self.y))
+            self.neighbours["west"] = MapFrame.MapFramesCoors.get((self.x-1, self.y))
         else:
-            self.neighbours[direction] = MapFrame.MapFramesCoors.get((x,y))
+            self.neighbours[direction] = MapFrame.MapFramesCoors.get((x, y))
         
     @staticmethod
     def get_neighbours():
@@ -61,25 +58,25 @@ class GameObject:
     def __init__(self, room = None):
         if not MapFrame.MapFrames:
             MapFrame(1, 1)
-            """This is to prevent creation of GameObjects 
-            before at least one MapFrame was instantiated."""
+            # This is to prevent creation of GameObjects before at least one MapFrame was instantiated.
         self.game_objects.append(self)
         self.room = room if room is not None else random.choice(MapFrame.MapFrames)
 
 
-#############################################################################################
 class Battle:
+    """
+    Class defining the battle logic - currently very simple
+    """
 
     @staticmethod
     def fight(attacker, defender):
         if hasattr(attacker, "fight") & hasattr(defender, "fight"):
             # formula
             # low and high of a hits are computed for attacker and defender
-            attacker_l = round((defender.defence / attacker.attack ),0)
-            attacker_h = round((attacker.attack / defender.defence ),0)
-            
-            defender_l = round((attacker.defence / defender.attack ),0)
-            defender_h = round((defender.attack / attacker.defence ),0)
+            attacker_l = round((defender.defence / attacker.attack), 0)
+            attacker_h = round((attacker.attack / defender.defence), 0)
+            defender_l = round((attacker.defence / defender.attack), 0)
+            defender_h = round((defender.attack / attacker.defence), 0)
             
             while attacker.health > 0 and defender.health > 0:
                 attacker_hit = random.randint(attacker_l, attacker_h)
@@ -97,6 +94,5 @@ class Battle:
                 if attacker.health < 0:
                     print('Too bad, you died...')
                     attacker.alive = 0
-            
         else: 
             print("Either one of attacker of defender is not a type for combat.")

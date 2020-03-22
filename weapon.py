@@ -3,7 +3,6 @@ Module meant to define weapons
 
 """
 
-import random
 from random import choices
 import environment as en
 
@@ -31,7 +30,7 @@ weapon_types = {"dagger": 3,
 
 
 class Weapon(en.GameObject):
-    def __init__(self, material=None, weapon_type=None, room = None):
+    def __init__(self, material = None, weapon_type = None, room = None):
         super().__init__(room)
         self.material = material if material is not None else choices(list(materials), list(materials_probs))[0]
         self.weapon_type = weapon_type if weapon_type is not None else choices(list(weapon_types), list(weapon_types_probs))[0]

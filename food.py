@@ -13,7 +13,7 @@ _healing_factors = {"Bread": 3,
 
 
 class Food(en.GameObject):
-    def __init__(self, room= None):
+    def __init__(self, room = None):
         super().__init__(room = room)
 
 
