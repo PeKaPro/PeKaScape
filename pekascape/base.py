@@ -6,8 +6,9 @@ As it is newly created, things will be transferred here eventually
 """
 
 from enum import Enum
+import random
 
-from environment import MapFrame
+from pekascape.environment import MapFrame
 
 
 class PlayerGameText(Enum):

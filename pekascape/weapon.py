@@ -5,8 +5,8 @@ Module meant to define weapons
 
 from random import choices
 
-import base
-import environment as en
+from pekascape import base
+from pekascape import environment as en
 
 materials_probs = {10: "wood",
                    8: "iron",

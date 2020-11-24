@@ -4,13 +4,12 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
-import base
-import environment as en
-import weapon as we
-from base import PlayerGameText
+from pekascape import base
+from pekascape import environment as en
+from pekascape import weapon as we
+from pekascape.base import PlayerGameText
 
 # future todo: move printed texts into special enums in base modules
-
 
 class Character(base.GameObject):
     Characters = list()

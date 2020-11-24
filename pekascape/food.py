@@ -1,8 +1,8 @@
 """
 Module incorporating food and other consumables and logic around it
 """
-import base
-import environment as en
+from pekascape import base
+from pekascape import environment as en
 
 # import threading - for future development of potions feature
 # import time - likewise
