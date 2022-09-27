@@ -11,29 +11,27 @@ from pekascape.base import PlayerGameText
 
 # future todo: move printed texts into special enums in base modules
 
+
 class Character(base.GameObject):
     Characters = list()
     
-    def __init__(self, room=None, level=1, health=100, attack=1, strength=1, defence=1):
+    def __init__(self, room=None, health=100, attack=1, defence=1):
         Character.Characters.append(self)
         super().__init__(room)
-        self.level = level
         self.health = health
         self.attack = attack
-        self.strength = strength
         self.defence = defence
 
 
-#############################################################################################
 class Player(Character):
     """
     Player class - instance of this class is meant to be controlled by real world player
     """
     Players = list()
     
-    def __init__(self, name=None, room=None, level=1, health=100, attack=1, strength=1, defence=1):
+    def __init__(self, name=None, room=None, health=100, attack=1, defence=1):
         Player.Players.append(self)
-        super().__init__(room, level, health, attack, strength, defence)
+        super().__init__(room, health, attack, defence)
         self.name = name
         print(f"Hey There, I am new character called {self.name}.")
         self.inventory = list()
@@ -106,9 +104,9 @@ class Player(Character):
 class Monster(Character):
     Monsters = list()
         
-    def __init__(self, name=None, room=None, level=1, health=100, attack=1, strength=1, defence=1):
+    def __init__(self, name=None, room=None, health=100, attack=1, defence=1):
         Monster.Monsters.append(self)
-        super().__init__(room, level, health, attack, strength, defence)
+        super().__init__(room, health, attack, defence)
         self.name = name if name is not None else "Monster"+str(len(Monster.Monsters))
         print(f"Hey There, I am new monster called {self.name}.")
         self.inventory = list()
