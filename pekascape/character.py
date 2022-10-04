@@ -6,7 +6,8 @@ Module defining basic agents of the game
 """
 from pekascape import base
 from pekascape import environment as en
-from pekascape import weapon as we
+from pekascape import behaviour as beha
+from pekascape import items
 from pekascape.base import PlayerGameText
 
 # future todo: move printed texts into special enums in base modules
@@ -56,7 +57,7 @@ class Player(Character):
             # self.room.items.remove([x for x in self.room.items if x.name==item][0])
             self.room.items.remove(item)
             print(f"I have picked up {item.name}.")
-            if isinstance(item, we.Weapon):
+            if isinstance(item, items.Weapon):
                 print(f"It has bonus {item.att_bonus} - consider wielding it.")
                 
     def drop(self, item):
@@ -81,7 +82,7 @@ class Player(Character):
             print(f"There is not monster named {other} in this room.")
         else:
             print("Fight is on!")
-            en.Battle.fight(self, [monster for monster in self.room.monsters if monster.name == other][0])
+            beha.Battle.fight(self, [monster for monster in self.room.monsters if monster.name == other][0])
         
     def wield(self, item):
         if item not in [x.name for x in self.inventory]:

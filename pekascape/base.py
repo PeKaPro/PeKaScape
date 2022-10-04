@@ -21,7 +21,7 @@ class PlayerGameText(Enum):
 class GameObject:
     game_objects = list()
 
-    def __init__(self, room = None):
+    def __init__(self, room=None):
         if not MapFrame.MapFrames:
             MapFrame(1, 1)
             # This is to prevent creation of GameObjects before at least one MapFrame was instantiated.

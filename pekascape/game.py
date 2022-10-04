@@ -1,16 +1,13 @@
-# generic dependencies
 import random
 
-# package specific dependencies
-from . import character as ch
-from . import environment as en
-from . import weapon as we
-from . import food as fd
+import character as ch
+import environment as en
+import items
 
 
 class Game:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.world_size = None
         self.monsters = None
         self.weapons = None
@@ -23,12 +20,12 @@ class Game:
         self._parse_config_values()
         self._create_world()
 
-    def _start_new(self):
-        print('hello there, you are startin new game of PeKaScape')
+    def _start_new(self) -> None:
+        print('hello there, you are starting new game of PeKaScape')
         i = input("please type in your name:")
         self.player_name = i
 
-    def _get_config(self):
+    def _get_config(self) -> None:
         values = list()
         for value in ['world size (in format of x*y)', 'monster count (int)', 'weapon count (int)', 'food count (int)']:
             values.append(input(f"please, fill in the value for {value}:"))
@@ -47,12 +44,12 @@ class Game:
         for i in range(int(self.monsters)):
             ch.Monster(attack=random.randint(10, 50))
         for i in range(int(self.weapons)):
-            we.Weapon()
+            items.Weapon()
         for i in range(int(self.food)):
-            fd.Bread()
+            items.Bread()
 
-
-    def _collect_input(self):
+    @staticmethod
+    def _collect_input() -> str:
         action = input('What do you want to do:')
         return action
 
