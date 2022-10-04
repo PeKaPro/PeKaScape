@@ -2,86 +2,99 @@
 Module to represent basic environment concepts
 1. notion of physical space
     Basic class is MapFrame as a unit of space
-    Mapframes can be connected
+    Map frames can be connected
 
-2. Class battle
-    Wrapper - very static class defining the battle logic
+
 """
 import random
-import time
+from typing import Literal, List, Tuple
+
+DIRECTION = Literal["north", "south", "east", "west"]
 
 
 class MapFrame:
     """This is the basic world element
     to incorporate the player-environment interaction"""
 
-    MapFrames = list()
-    MapFramesCoors = dict()
+    # MapFrames = list()
 
-    def __init__(self, x, y):
-        
-        MapFrame.MapFrames.append(self)
-        MapFrame.MapFramesCoors[(x, y)] = self
-        
-        self.x = x 
-        self.y = y 
-        
+    def __init__(self, x: int, y: int) -> None:
+        # MapFrame.MapFrames.append(self)
+
+        self.x = x
+        self.y = y
+
         self.items = list()
         self.monsters = list()
         self.players = list()
+
         self.neighbours = dict()
-        
-    def set_neighbours(self, x=None, y=None, direction=None):
-        if direction is None:
-            self.neighbours["north"] = MapFrame.MapFramesCoors.get((self.x, self.y+1))
-            self.neighbours["south"] = MapFrame.MapFramesCoors.get((self.x, self.y-1))
-            self.neighbours["east"] = MapFrame.MapFramesCoors.get((self.x+1, self.y))
-            self.neighbours["west"] = MapFrame.MapFramesCoors.get((self.x-1, self.y))
-        else:
-            self.neighbours[direction] = MapFrame.MapFramesCoors.get((x, y))
-        
-    @staticmethod
-    def get_neighbours():
-        for mapframe in MapFrame.MapFrames:
-            mapframe.set_neighbours()
-    
-    @staticmethod        
-    def make_world(x, y):
-        for i in range(x):
-            for j in range(y):
-                MapFrame(i, j)
+
+    def set_adjacent_frame(self, direction: DIRECTION, adj_frame: 'MapFrame') -> None:
+        self.neighbours[direction] = adj_frame
+
+    @property
+    def position(self) -> Tuple[int, int]:
+        return self.x, self.y
 
 
-class Battle:
+class Map:
     """
-    Class defining the battle logic - currently very simple
+    Generic class that represents game map - as a collection of map frames
     """
 
-    @staticmethod
-    def fight(attacker, defender):
-        if hasattr(attacker, "fight") & hasattr(defender, "fight"):
-            # formula
-            # low and high of a hits are computed for attacker and defender
-            attacker_l = round((defender.defence / attacker.attack), 0)
-            attacker_h = round((attacker.attack / defender.defence), 0)
-            defender_l = round((attacker.defence / defender.attack), 0)
-            defender_h = round((defender.attack / attacker.defence), 0)
-            
-            while attacker.health > 0 and defender.health > 0:
-                attacker_hit = random.randint(attacker_l, attacker_h)
-                defender.health -= attacker_hit
-                print(f"{defender.name} was hit and lost {attacker_hit} health.")
-                
-                time.sleep(0.4)
-                
-                defender_hit = random.randint(defender_l, defender_h)
-                attacker.health -= defender_hit
-                print(f"{attacker.name} was hit and lost {defender_hit} health.\n")
-                
-                time.sleep(0.4)
+    def __init__(self) -> None:
+        self.map_frames: List['MapFrame'] = []
 
-                if attacker.health < 0:
-                    print('Too bad, you died...')
-                    attacker.alive = 0
-        else: 
-            print("Either one of attacker of defender is not a type for combat.")
+    @property
+    def random_frame(self):
+        return random.choice(self.map_frames)
+
+
+class MazeWorld(Map):
+
+    def __init__(self, size_x: int = 5, size_y: int = 5):
+        super().__init__()
+        self.size_x = size_x
+        self.size_y = size_y
+
+        self._index = dict()
+        self._generate_map_frames()
+        self._index_map_frames()
+        self._connect_map_frames()
+
+    def _generate_map_frames(self) -> None:
+        """
+        Generates map frames and stores them into self
+        """
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                self.map_frames.append(MapFrame(i, j))
+
+    def _index_map_frames(self) -> None:
+        """
+        Stores map frames of a world into an index structure - simple dict
+        """
+        for map_frame in self.map_frames:
+            self._index[map_frame.position] = map_frame
+
+    def _connect_map_frames(self) -> None:
+        for map_frame in self.map_frames:
+            x, y = map_frame.position
+            for direction, mf in self._get_adjacent_frames(x, y):
+                if not mf:
+                    continue
+                map_frame.set_adjacent_frame(direction, mf)
+
+    def _get_adjacent_frames(self, x, y) -> Tuple[DIRECTION, MapFrame]:
+        directions = {
+            "west": (-1, 0),
+            "east": (1, 0),
+            "south": (0, -1),
+            "north": (0, 1)
+        }
+
+        for direction, (adj_x, adj_y) in directions.items():
+            mf = self._index.get(x + adj_x, y + adj_y)
+            if mf:
+                yield direction, mf

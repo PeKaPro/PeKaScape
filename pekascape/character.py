@@ -4,6 +4,7 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
+from environment import MapFrame
 from pekascape import base
 from pekascape import behaviour
 from pekascape import items
@@ -28,8 +29,8 @@ class Player(Character):
     Player class - instance of this class is meant to be controlled by real world player
     """
     Players = list()
-    
-    def __init__(self, name=None, room=None, health=100, attack=1, defence=1):
+
+    def __init__(self, name:str , room: MapFrame, health=100, attack=1, defence=1):
         Player.Players.append(self)
         super().__init__(room, health, attack, defence)
         self.name = name

@@ -6,13 +6,17 @@ from pekascape import character as ch
 from pekascape import environment as en
 from pekascape import items as it
 
-
 #    first instantiate room
-en.MapFrame.make_world(30, 30)
-en.MapFrame.get_neighbours()
+w = en.MazeWorld(30, 30)
 
-John = ch.Player(name="John")
-Henry = ch.Monster(name="Henry", health=3)
+random_frame = w.random_frame
+
+John = ch.Player(name="John", room=random_frame)
+Henry = ch.Monster(name="Henry", room=random_frame, health=3)
+
+John.room
+
+John.see()
 
 for i in range(500):
     ch.Monster(attack=random.randint(10, 50))
