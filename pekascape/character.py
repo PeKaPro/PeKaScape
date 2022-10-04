@@ -5,9 +5,9 @@ Module defining basic agents of the game
 3. Monster as a class of NPC enemies
 """
 from pekascape import base
-from pekascape import behaviour as beha
+from pekascape import behaviour
 from pekascape import items
-from pekascape.base import PlayerGameText
+from pekascape.interface import PlayerGameText
 
 # future todo: move printed texts into special enums in base modules
 
@@ -81,7 +81,7 @@ class Player(Character):
             print(f"There is not monster named {other} in this room.")
         else:
             print("Fight is on!")
-            beha.Battle.fight(self, [monster for monster in self.room.monsters if monster.name == other][0])
+            behaviour.Battle.fight(self, [monster for monster in self.room.monsters if monster.name == other][0])
         
     def wield(self, item):
         if item not in [x.name for x in self.inventory]:
