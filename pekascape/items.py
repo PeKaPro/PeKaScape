@@ -4,7 +4,6 @@ Module incorporating food and other consumables and logic around it
 import base
 from random import choices
 
-
 # import threading - for future development of potions feature
 # import time - likewise
 
@@ -23,10 +22,8 @@ class Bread(Food):
         super().__init__(room)
         self.healing_factor = _healing_factors[type(self).__name__]
 
+
 # potions - increases some stats temporarily
-
-
-
 
 
 materials_probs = {10: "wood",
@@ -53,12 +50,11 @@ weapon_types = {"dagger": 3,
 
 
 class Weapon(base.GameObject):
-    def __init__(self, material = None, weapon_type = None, room = None):
+    def __init__(self, material=None, weapon_type=None, room=None):
         super().__init__(room)
         self.material = material if material is not None else choices(list(materials), list(materials_probs))[0]
-        self.weapon_type = weapon_type if weapon_type is not None else choices(list(weapon_types), list(weapon_types_probs))[0]
+        self.weapon_type = weapon_type if weapon_type is not None else \
+            choices(list(weapon_types), list(weapon_types_probs))[0]
         self.name = f"{self.material} {self.weapon_type}"
         self.att_bonus = materials[self.material] + weapon_types[self.weapon_type]
         self.room.items.append(self)
-
-

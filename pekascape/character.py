@@ -5,7 +5,6 @@ Module defining basic agents of the game
 3. Monster as a class of NPC enemies
 """
 from pekascape import base
-from pekascape import environment as en
 from pekascape import behaviour as beha
 from pekascape import items
 from pekascape.base import PlayerGameText
