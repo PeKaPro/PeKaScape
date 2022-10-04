@@ -51,7 +51,7 @@ class Map:
         return random.choice(self.map_frames)
 
 
-class MazeWorld(Map):
+class MazeMap(Map):
 
     def __init__(self, size_x: int = 5, size_y: int = 5):
         super().__init__()
