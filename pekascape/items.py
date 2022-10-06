@@ -13,6 +13,11 @@ class FoodConfig:
                       "Apple": 1,
                       "Fish": 5}
 
+    FOOD_PROBS = (
+        ("Bread", "Apple" "Fish",),
+        (0.3, 0.5, 0.2),
+    )
+
     @staticmethod
     def get_healing_factor(food_identifier: str) -> int:
         return FoodConfig.HEALING_FACTOR.get(food_identifier, 0)
@@ -23,34 +28,20 @@ class Food(base.GameObject):
     Food is some edible object that has a healing factor - it heals some health to a player
     """
 
-    def __init__(self, room: MapFrame, healing_factor: int) -> None:
-        super().__init__(room=room)
-        self.healing_factor = healing_factor
+    def __init__(self, name: str, room: MapFrame) -> None:
+        super().__init__(name, room=room)
 
-    def _get_identifier(self) -> str:
-        return type(self).__name__
-
-
-class ConfigurableFood(Food):
-    """
-    This class works with FoodConfig class where the healing factors are managed in one place,
-    child classes of ConfigurableFood further specialize 'behavior' only by defining their class name ...
-    """
-
-    def __init__(self, room: MapFrame) -> None:
-        super().__init__(room, FoodConfig.get_healing_factor(self._get_identifier()))
+    @property
+    def healing_factor(self) -> int:
+        return FoodConfig.get_healing_factor(self.name)
 
 
-class Bread(ConfigurableFood):
-    ...
+class FoodFactory:
 
-
-class Apple(ConfigurableFood):
-    ...
-
-
-class Fish(ConfigurableFood):
-    ...
+    @staticmethod
+    def create_random(room: MapFrame) -> Food:
+        food_name = choices(FoodConfig.FOOD_PROBS[0], FoodConfig.FOOD_PROBS[1])[0]
+        return Food(name=food_name, room=room)
 
 
 class WeaponConfig:
@@ -76,7 +67,7 @@ class WeaponConfig:
 
 class Weapon(base.GameObject):
     def __init__(self, room: MapFrame, material=None, weapon_type=None):
-        super().__init__(room)
+        super().__init__(name=f"{material} {weapon_type}", room=room)
 
         self.material = material
         self.weapon_type = weapon_type
@@ -84,15 +75,11 @@ class Weapon(base.GameObject):
         self.att_bonus = WeaponConfig.MATERIAL_STRENGTH[self.material] + WeaponConfig.WEAPON_STRENGTH[self.weapon_type]
         self.room.items.append(self)
 
-    @property
-    def name(self) -> str:
-        return f"{self.material} {self.weapon_type}"
-
 
 class WeaponFactory:
 
     @staticmethod
-    def create_random_weapon(room: MapFrame) -> Weapon:
+    def create_random(room: MapFrame) -> Weapon:
         material = choices(WeaponConfig.MATERIALS_PROBS[0], WeaponConfig.MATERIALS_PROBS[1])[0]
         weapon_type = choices(WeaponConfig.WEAPON_TYPES_PROBS[0], WeaponConfig.WEAPON_TYPES_PROBS[1])[0]
         return Weapon(room, material, weapon_type)

@@ -6,6 +6,7 @@ import items
 
 
 class Game:
+    allowed_actions = ['see', 'go north', 'go south', 'go west', 'go east', 'fight']
 
     def __init__(self) -> None:
         self.world_size = None
@@ -32,32 +33,33 @@ class Game:
 
         self.world_size, self.monsters, self.weapons, self.food = values
 
-    def _parse_config_values(self):
+    def _parse_config_values(self) -> None:
         self.world_size = (int(x) for x in self.world_size.split('*'))
 
-    def _create_world(self):
-        en.MapFrame.make_world(*self.world_size)
-        en.MapFrame.get_neighbours()
+    def _create_world(self) -> None:
+        self.map = en.MazeMap(*self.world_size)
 
-    def _populate_world(self):
-        self.player = ch.Player(name=self.player_name, health=500, attack=20, defence=20)
+    def _populate_world(self) -> None:
+
+        self.player = ch.Player(name=self.player_name, room=self.map.random_frame, health=500, attack=20, defence=20)
         for i in range(int(self.monsters)):
-            ch.Monster(attack=random.randint(10, 50))
+            ch.Monster(room=self.map.random_frame, attack=random.randint(10, 50))
+
         for i in range(int(self.weapons)):
-            items.Weapon()
+            items.WeaponFactory.create_random(room=self.map.random_frame)
+
         for i in range(int(self.food)):
-            items.Bread()
+            items.FoodFactory.create_random(room=self.map.random_frame)
 
     @staticmethod
     def _collect_input() -> str:
         action = input('What do you want to do:')
         return action
 
-    def _act_on_input(self, action):
-        allowed_actions = ['see', 'go north', 'go south', 'go west', 'go east', 'fight']
-        if action not in allowed_actions:
-            print('sorry, I dont understand that \nAllowed actions are', ','.join(allowed_actions))
+    def _act_on_input(self, action: str) -> None:
+        if action not in self.allowed_actions:
+            print('sorry, I dont understand that \nAllowed actions are', ','.join(self.allowed_actions))
 
-    def _play(self):
+    def _play(self) -> None:
         while self.player.alive:
             self._act_on_input(self._collect_input())

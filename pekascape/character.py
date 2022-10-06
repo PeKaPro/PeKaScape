@@ -4,122 +4,137 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
+from base import Character
 from environment import MapFrame
-from pekascape import base
+from game_exceptions import PlayerDeadError
+from items import Weapon
+from mixins import ItemsAccessMixin
 from pekascape import behaviour
 from pekascape import items
-from pekascape.interface import PlayerGameText
-
-# future todo: move printed texts into special enums in base modules
 
 
-class Character(base.GameObject):
-    Characters = list()
-    
-    def __init__(self, room=None, health=100, attack=1, defence=1):
-        Character.Characters.append(self)
-        super().__init__(room)
-        self.health = health
-        self.attack = attack
-        self.defence = defence
+# todo: move printed texts into special enums in base modules
 
 
-class Player(Character):
+class Player(Character, ItemsAccessMixin):
     """
     Player class - instance of this class is meant to be controlled by real world player
     """
-    Players = list()
 
-    def __init__(self, name:str , room: MapFrame, health=100, attack=1, defence=1):
-        Player.Players.append(self)
-        super().__init__(room, health, attack, defence)
-        self.name = name
-        print(f"Hey There, I am new character called {self.name}.")
-        self.inventory = list()
+    def __init__(self, name: str, room: MapFrame, health=100, attack=1, defence=1):
+        super().__init__(name, room, health, attack, defence)
         self.wielded_weapon = None
-        self.room.players.append(self)
-        self.alive = 1
-        
-    def pickup(self, item):
+
+    @property
+    def alive(self) -> bool:
+        return self.health > 0
+
+    def check_alive(self) -> None:
         if not self.alive:
-            print(PlayerGameText.DEAD_INVOKE_ACTION)
+            raise PlayerDeadError
+
+    @property
+    def fully_loaded(self) -> bool:
+        return self.items == 3
+
+    def pickup(self, item_name: str) -> None:
+
+        if self.fully_loaded:
+            print(f"I cant pick up anything, I am fully loaded.\nDrop something first")
             return
-        if len(self.inventory) == 3:
-            print(f"I cant pick up anything, I am fully loaded.\nDrop something first.")
+
+        if item_name not in self.room.items_by_name:
+            print(f"I cant pick up {item_name} as its not in this room")
             return
-        if item not in [x.name for x in self.room.items]:
-            print(f"I cant pick up {item} as its not in this room.\n")
+
+        item = self.room.get_item_by_name(item_name)
+        self.room.remove_content(item)
+        self.items.append(item)
+
+        print(f"I have picked up {item.name}.")
+        if isinstance(item, items.Weapon):
+            print(f"It has bonus {item.att_bonus} - consider wielding it")
+
+    def drop(self, item_name: str) -> None:
+        if item_name not in self.items_by_name:
+            print(f"I cant drop something I dont have, check your inventory again")
             return
-        if item in [x.name for x in self.room.items]:
-            item = [x for x in self.room.items if x.name == item][0]
-            # self.inventory.append([x for x in self.room.items if x.name==item][0])
-            self.inventory.append(item)
-            # self.room.items.remove([x for x in self.room.items if x.name==item][0])
-            self.room.items.remove(item)
-            print(f"I have picked up {item.name}.")
-            if isinstance(item, items.Weapon):
-                print(f"It has bonus {item.att_bonus} - consider wielding it.")
-                
-    def drop(self, item):
-        if item not in [x.name for x in self.inventory]:
-            print(f"I cant drop something I dont have, check your inventory again.")
-            return
-        self.room.items.append([x for x in self.inventory if x.name == item][0])
-        self.inventory.remove([x for x in self.inventory if x.name == item][0])
-        
-    def see(self):
+
+        item = self.get_item_by_name(item_name)
+        self.items.remove(item)
+        self.room.add_content(item)
+
+    def see(self) -> None:
         for direction in self.room.neighbours.keys():
             if self.room.neighbours.get(direction):
-                print(f"There is door to the {direction} in this room.")
-        for monster in self.room.monsters:
-            print(f"There is {monster.name} in the room.")
-        print("\n")
+                print(f"There is passage to the {direction}")
+
+        for monster in self.room.characters:
+            print(f"There is {monster.name}")
+
         for item in self.room.items:
-            print(f"There is {item.name} in the room.")
-       
-    def fight(self, other):
-        if other not in [monster.name for monster in self.room.monsters]:
-            print(f"There is not monster named {other} in this room.")
+            print(f"There is {item.name} laying down")
+
+    def fight(self, other: str) -> None:
+        if other not in self.room.characters_by_name:
+            print(f"There is not monster named {other} in this room")
         else:
             print("Fight is on!")
-            behaviour.Battle.fight(self, [monster for monster in self.room.monsters if monster.name == other][0])
-        
-    def wield(self, item):
-        if item not in [x.name for x in self.inventory]:
-            print("I cannot wield something I dont have.")
+            monster = self.room.get_character_by_name(other)
+            behaviour.Battle.fight(self, monster)
+
+    def wield(self, item_name: str) -> None:
+        if item_name not in self.items_by_name:
+            print("I cannot wield something I dont have")
             return
-        self.wielded_weapon = [x for x in self.inventory if x.name == item][0]
-        self.attack += self.wielded_weapon.att_bonus
-        self.inventory.remove([x for x in self.inventory if x.name == item][0])
-        
-    def go(self, direction):
+
+        item = self.get_item_by_name(item_name)
+        if not isinstance(item, Weapon):
+            print(f"I cannot wield {item_name}, it is not a weapon")
+
+        if self.wielded_weapon:
+            print(f"I am wielding {self.wielded_weapon.name}, I will swap it with {item_name}")
+            self.items.remove(item)
+            self.items.append(self.wielded_weapon)
+            self.wielded_weapon = item
+        else:
+            self.wielded_weapon = item
+            self.items.remove(item)
+
+    @property
+    def total_attack(self) -> int:
+        if self.wielded_weapon:
+            return self.attack + self.wielded_weapon.att_bonus
+        return self.attack
+
+    def go(self, direction: str) -> None:
         target = self.room.neighbours.get(direction)
         if not target:
             print(f"There is no room in direction of {direction}.")
         else:
-            target.players.append(self)
-            self.room.players.remove(self)
+            target.characters.append(self)
+            self.room.characters.remove(self)
             self.room = target
-    
+
 
 class Monster(Character):
-    Monsters = list()
-        
-    def __init__(self, name=None, room=None, health=100, attack=1, defence=1):
-        Monster.Monsters.append(self)
-        super().__init__(room, health, attack, defence)
-        self.name = name if name is not None else "Monster"+str(len(Monster.Monsters))
-        print(f"Hey There, I am new monster called {self.name}.")
-        self.inventory = list()
-        self.room.monsters.append(self)
-            
-    def fight(self, other):
+    monster_count = 0
+
+    @classmethod
+    def track_count(cls) -> None:
+        cls.monster_count += 1
+
+    def __init__(self, room: MapFrame, health: int = 100, attack: int = 1, defence: int = 1):
+        name = f"Monster{self.monster_count}"
+        super().__init__(name, room, health, attack, defence)
+
+    def fight(self, other: Character) -> None:
         pass
 
-    def __del__(self):
-        print(f"Deleting {self.name}")
-        while self.inventory:
-            self.room.items.append(self.inventory.pop())
-        self.room.monsters.remove(self)     # remove from the room
-        type(self).Monsters.remove(self)    # remove from monsters list
-        Character.Characters.remove(self)   # remove from characters list
+    def die(self) -> None:
+        self.drop_items_on_death()
+        super().die()
+
+    def drop_items_on_death(self) -> None:
+        while self.items:
+            self.room.add_content(self.items.pop())

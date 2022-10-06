@@ -6,13 +6,17 @@ Module to represent basic environment concepts
 
 
 """
+import abc
 import random
-from typing import Literal, List, Tuple
+from typing import Literal, List, Tuple, Union
+
+from base import GameObject, Character
+from mixins import ItemsAccessMixin
 
 DIRECTION = Literal["north", "south", "east", "west"]
 
 
-class MapFrame:
+class MapFrame(ItemsAccessMixin):
     """
     Represents physical location, place where some interaction can happen.
     Player, items, monsters are in some location (MapFrame)
@@ -25,7 +29,7 @@ class MapFrame:
         self.y = y
 
         self.items = list()
-        self.characters = list()
+        self.characters: List[Character] = list()
 
         self.neighbours = dict()
 
@@ -36,8 +40,29 @@ class MapFrame:
     def position(self) -> Tuple[int, int]:
         return self.x, self.y
 
+    def remove_content(self, subject: Union[Character, GameObject]) -> None:
+        if subject in self.items:
+            self.items.remove(subject)
+            return
+        if subject in self.characters:
+            self.characters.remove(subject)
+            return
 
-class Map:
+    def add_content(self, subject: Union[Character, GameObject]) -> None:
+        if isinstance(subject, Character):
+            self.characters.append(subject)
+        else:
+            self.items.append(subject)
+
+    @property
+    def characters_by_name(self) -> List[str]:
+        return [character.name for character in self.characters]
+
+    def get_character_by_name(self, character_name: str):
+        return [character for character in self.characters if character.name == character_name][0]
+
+
+class Map(abc.ABC):
     """
     Generic class that represents game map - as a collection of map frames
     """
@@ -48,6 +73,10 @@ class Map:
     @property
     def random_frame(self) -> MapFrame:
         return random.choice(self.map_frames)
+
+    @abc.abstractmethod
+    def _generate_map_frames(self) -> None:
+        ...
 
 
 class MazeMap(Map):

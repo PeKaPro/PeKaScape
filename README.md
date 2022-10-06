@@ -4,8 +4,8 @@ RPG game that serves a main purpose of teaching me how to code.
 
 # Roadmap
 
-## MapFrame
-- [x] single 'room'
+## class MapFrame
+- [x] single location, physical space notion
 
 ## class Map
 - generic (abstract) collections of MapFrames, interconnected or not ... 

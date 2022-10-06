@@ -8,24 +8,23 @@ from pekascape.environment import MapFrame
 
 
 class GameObject:
-    game_objects = list()
 
-    def __init__(self, room: MapFrame):
-        self.game_objects.append(self)
+    def __init__(self, name, room: MapFrame):
+        self.name = name
         self.room = room
 
-        if isinstance(self, Character):
-            print('char')
-            self.room.characters.append(self)
-        else:
-            self.room.items.append(self)
+        self.room.add_content(self)
 
 
 class Character(GameObject):
 
-    def __init__(self, room: MapFrame, health: int = 100, attack: int = 1, defence: int = 1):
-        # Character.Characters.append(self)
-        super().__init__(room)
+    def __init__(self, name: str, room: MapFrame, health: int, attack: int, defence: int):
+        super().__init__(name, room)
         self.health = health
         self.attack = attack
         self.defence = defence
+
+        self.items = list()
+
+    def die(self) -> None:
+        self.room.remove_content(self)

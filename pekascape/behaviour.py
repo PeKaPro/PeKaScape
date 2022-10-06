@@ -1,6 +1,8 @@
 import random
 import time
 
+from base import Character
+
 
 class Battle:
     """
@@ -8,14 +10,14 @@ class Battle:
     """
 
     @staticmethod
-    def fight(attacker, defender):
+    def fight(attacker: Character, defender: Character) -> None:
         if hasattr(attacker, "fight") & hasattr(defender, "fight"):
             # formula
             # low and high of a hits are computed for attacker and defender
-            attacker_l = round((defender.defence / attacker.attack), 0)
-            attacker_h = round((attacker.attack / defender.defence), 0)
-            defender_l = round((attacker.defence / defender.attack), 0)
-            defender_h = round((defender.attack / attacker.defence), 0)
+            attacker_l = int(round((defender.defence / attacker.attack), 0))
+            attacker_h = int(round((attacker.attack / defender.defence), 0))
+            defender_l = int(round((attacker.defence / defender.attack), 0))
+            defender_h = int(round((defender.attack / attacker.defence), 0))
 
             while attacker.health > 0 and defender.health > 0:
                 attacker_hit = random.randint(attacker_l, attacker_h)
