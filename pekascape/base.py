@@ -4,12 +4,15 @@ Base module defining elements used by other modules
 As it is newly created, things will be transferred here eventually
 
 """
-from pekascape.environment import MapFrame
+import typing
+
+if typing.TYPE_CHECKING:
+    from pekascape.environment import MapFrame
 
 
 class GameObject:
 
-    def __init__(self, name, room: MapFrame):
+    def __init__(self, name, room: 'MapFrame'):
         self.name = name
         self.room = room
 
@@ -18,7 +21,7 @@ class GameObject:
 
 class Character(GameObject):
 
-    def __init__(self, name: str, room: MapFrame, health: int, attack: int, defence: int):
+    def __init__(self, name: str, room: 'MapFrame', health: int, attack: int, defence: int):
         super().__init__(name, room)
         self.health = health
         self.attack = attack

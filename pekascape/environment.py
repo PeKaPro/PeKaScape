@@ -123,6 +123,6 @@ class MazeMap(Map):
         }
 
         for direction, (adj_x, adj_y) in directions.items():
-            mf = self._index.get(x + adj_x, y + adj_y)
+            mf = self._index.get((x + adj_x, y + adj_y))
             if mf:
                 yield direction, mf

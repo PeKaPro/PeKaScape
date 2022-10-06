@@ -4,6 +4,7 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
+import pekascape.items
 from base import Character
 from environment import MapFrame
 from game_exceptions import PlayerDeadError
@@ -89,8 +90,8 @@ class Player(Character, ItemsAccessMixin):
             return
 
         item = self.get_item_by_name(item_name)
-        if not isinstance(item, Weapon):
-            print(f"I cannot wield {item_name}, it is not a weapon")
+        if not isinstance(item, pekascape.items.Weapon):
+            print(f"I cannot wield {item_name}, it is not a weapon, it is {type(item)}")
 
         if self.wielded_weapon:
             print(f"I am wielding {self.wielded_weapon.name}, I will swap it with {item_name}")

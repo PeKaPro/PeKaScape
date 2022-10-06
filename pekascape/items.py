@@ -14,7 +14,7 @@ class FoodConfig:
                       "Fish": 5}
 
     FOOD_PROBS = (
-        ("Bread", "Apple" "Fish",),
+        ("Bread", "Apple", "Fish",),
         (0.3, 0.5, 0.2),
     )
 
@@ -46,7 +46,7 @@ class FoodFactory:
 
 class WeaponConfig:
     MATERIALS_PROBS = (
-        ("wood", "iron" "mithril",),
+        ("wood", "iron", "mithril",),
         (0.6, 0.3, 0.1),
     )
 
