@@ -13,20 +13,19 @@ DIRECTION = Literal["north", "south", "east", "west"]
 
 
 class MapFrame:
-    """This is the basic world element
-    to incorporate the player-environment interaction"""
-
-    # MapFrames = list()
+    """
+    Represents physical location, place where some interaction can happen.
+    Player, items, monsters are in some location (MapFrame)
+        and they can react to(with) each other if they are in the same MapFrame
+    """
 
     def __init__(self, x: int, y: int) -> None:
-        # MapFrame.MapFrames.append(self)
 
         self.x = x
         self.y = y
 
         self.items = list()
-        self.monsters = list()
-        self.players = list()
+        self.characters = list()
 
         self.neighbours = dict()
 
@@ -47,7 +46,7 @@ class Map:
         self.map_frames: List['MapFrame'] = []
 
     @property
-    def random_frame(self):
+    def random_frame(self) -> MapFrame:
         return random.choice(self.map_frames)
 
 
