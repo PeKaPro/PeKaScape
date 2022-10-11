@@ -20,6 +20,7 @@ class Game:
         self._get_config()
         self._parse_config_values()
         self._create_world()
+        self._play()
 
     def _start_new(self) -> None:
         print('hello there, you are starting new game of PeKaScape')
