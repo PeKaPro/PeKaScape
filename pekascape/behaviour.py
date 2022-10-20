@@ -27,6 +27,12 @@ class Battle:
         defender_l = cls._calculate_low_hit(attacker.defence, defender.attack)
         defender_h = cls._calculate_high_hit(defender.attack, attacker.defence)
 
+        if attacker_l == attacker_h:
+            attacker_h += 1
+
+        if defender_l == defender_h:
+            defender_h += 1
+
         return attacker_l, attacker_h, defender_l, defender_h
 
     @classmethod
@@ -54,4 +60,7 @@ class Battle:
 
             if attacker.health < 0:
                 print('Too bad, you died...')
+                attacker.die()
                 return
+
+        defender.die()

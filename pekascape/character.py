@@ -4,15 +4,17 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
+import typing
 import pekascape.items
 from base import Character
-from environment import MapFrame
+
 from game_exceptions import PlayerDeadError
-from items import Weapon
 from mixins import ItemsAccessMixin
 from pekascape import behaviour
 from pekascape import items
 
+# if typing.TYPE_CHECKING:
+#     from environment import MapFrame
 
 # todo: move printed texts into special enums in base modules
 
@@ -22,7 +24,7 @@ class Player(Character, ItemsAccessMixin):
     Player class - instance of this class is meant to be controlled by real world player
     """
 
-    def __init__(self, name: str, room: MapFrame, health=100, attack=1, defence=1):
+    def __init__(self, name: str, room: 'MapFrame', health=100, attack=1, defence=1):
         super().__init__(name, room, health, attack, defence)
         self.wielded_weapon = None
 
@@ -70,7 +72,7 @@ class Player(Character, ItemsAccessMixin):
             if self.room.neighbours.get(direction):
                 print(f"There is passage to the {direction}")
 
-        for monster in self.room.characters:
+        for monster in self.room.monsters:
             print(f"There is {monster.name}")
 
         for item in self.room.items:
@@ -91,7 +93,7 @@ class Player(Character, ItemsAccessMixin):
 
         item = self.get_item_by_name(item_name)
         if not isinstance(item, pekascape.items.Weapon):
-            print(f"I cannot wield {item_name}, it is not a weapon, it is {type(item)}")
+            print(f"I cannot wield {item_name}, it is not a weapon, it is a {type(item)}")
 
         if self.wielded_weapon:
             print(f"I am wielding {self.wielded_weapon.name}, I will swap it with {item_name}")
@@ -101,6 +103,18 @@ class Player(Character, ItemsAccessMixin):
         else:
             self.wielded_weapon = item
             self.items.remove(item)
+
+    def eat(self, item_name:str) -> None:
+        if item_name not in self.items_by_name:
+            print("I cannot eat something I dont have")
+            return
+
+        item = self.get_item_by_name(item_name)
+        if not isinstance(item, pekascape.items.Food):
+            print(f"I cannot eat {item_name}, it is not a food, it is a {type(item)}")
+
+        self.items.remove(item)
+        self.health += item.healing_factor  # TODO: LOL, you can increase health without limit...
 
     @property
     def total_attack(self) -> int:
@@ -116,6 +130,13 @@ class Player(Character, ItemsAccessMixin):
             target.characters.append(self)
             self.room.characters.remove(self)
             self.room = target
+            self.see()
+
+    def observe(self, monster_name: str):
+        if monster_name not in self.room.characters_by_name:
+            print(f"There is not monster named {monster_name} in this room")
+        monster = self.room.get_character_by_name(monster_name)
+        print(monster)
 
 
 class Monster(Character):
@@ -125,7 +146,8 @@ class Monster(Character):
     def track_count(cls) -> None:
         cls.monster_count += 1
 
-    def __init__(self, room: MapFrame, health: int = 100, attack: int = 1, defence: int = 1):
+    def __init__(self, room: 'MapFrame', health: int = 100, attack: int = 1, defence: int = 1):
+        self.track_count()
         name = f"Monster{self.monster_count}"
         super().__init__(name, room, health, attack, defence)
 

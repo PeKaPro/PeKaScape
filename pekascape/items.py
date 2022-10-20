@@ -1,11 +1,13 @@
 """
 Module incorporating game items and its logic, food, weapons, factories for those...
 """
-
+import typing
 from random import choices
 
 import base
-from environment import MapFrame
+
+if typing.TYPE_CHECKING:
+    from environment import MapFrame
 
 
 class FoodConfig:
@@ -28,7 +30,7 @@ class Food(base.GameObject):
     Food is some edible object that has a healing factor - it heals some health to a player
     """
 
-    def __init__(self, name: str, room: MapFrame) -> None:
+    def __init__(self, name: str, room: 'MapFrame') -> None:
         super().__init__(name, room=room)
 
     @property
@@ -39,7 +41,7 @@ class Food(base.GameObject):
 class FoodFactory:
 
     @staticmethod
-    def create_random(room: MapFrame) -> Food:
+    def create_random(room: 'MapFrame') -> Food:
         food_name = choices(FoodConfig.FOOD_PROBS[0], FoodConfig.FOOD_PROBS[1])[0]
         return Food(name=food_name, room=room)
 
@@ -66,7 +68,7 @@ class WeaponConfig:
 
 
 class Weapon(base.GameObject):
-    def __init__(self, room: MapFrame, material=None, weapon_type=None):
+    def __init__(self, room: 'MapFrame', material=None, weapon_type=None):
         super().__init__(name=f"{material} {weapon_type}", room=room)
 
         self.material = material
@@ -79,7 +81,7 @@ class Weapon(base.GameObject):
 class WeaponFactory:
 
     @staticmethod
-    def create_random(room: MapFrame) -> Weapon:
+    def create_random(room: 'MapFrame') -> Weapon:
         material = choices(WeaponConfig.MATERIALS_PROBS[0], WeaponConfig.MATERIALS_PROBS[1])[0]
         weapon_type = choices(WeaponConfig.WEAPON_TYPES_PROBS[0], WeaponConfig.WEAPON_TYPES_PROBS[1])[0]
         return Weapon(room, material, weapon_type)

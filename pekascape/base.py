@@ -31,3 +31,7 @@ class Character(GameObject):
 
     def die(self) -> None:
         self.room.remove_content(self)
+
+    def __str__(self):
+        return f"{type(self).__name__} {self.name} \n" \
+               f"with attack {self.attack}, defence {self.defence} and {self.health} health"

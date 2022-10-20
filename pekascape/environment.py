@@ -11,6 +11,7 @@ import random
 from typing import Literal, List, Tuple, Union
 
 from base import GameObject, Character
+from character import Monster
 from mixins import ItemsAccessMixin
 
 DIRECTION = Literal["north", "south", "east", "west"]
@@ -60,6 +61,10 @@ class MapFrame(ItemsAccessMixin):
 
     def get_character_by_name(self, character_name: str):
         return [character for character in self.characters if character.name == character_name][0]
+
+    @property
+    def monsters(self):
+        return [char for char in self.characters if isinstance(char, Monster)]
 
 
 class Map(abc.ABC):

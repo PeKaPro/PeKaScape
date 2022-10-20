@@ -1,12 +1,13 @@
 import random
+from typing import Tuple
 
 import character as ch
 import environment as en
-import items
+import pekascape.items
 
 
-class Game:
-    allowed_actions = ['see', 'go north', 'go south', 'go west', 'go east', 'fight']
+class CustomGame:
+    allowed_actions = ['see', 'go', 'fight', 'pickup', 'drop', 'wield', 'observe', 'stats', 'eat']
 
     def __init__(self) -> None:
         self.world_size = None
@@ -20,6 +21,7 @@ class Game:
         self._get_config()
         self._parse_config_values()
         self._create_world()
+        self._populate_world()
         self._play()
 
     def _start_new(self) -> None:
@@ -47,10 +49,10 @@ class Game:
             ch.Monster(room=self.map.random_frame, attack=random.randint(10, 50))
 
         for i in range(int(self.weapons)):
-            items.WeaponFactory.create_random(room=self.map.random_frame)
+            pekascape.items.WeaponFactory.create_random(room=self.map.random_frame)
 
         for i in range(int(self.food)):
-            items.FoodFactory.create_random(room=self.map.random_frame)
+            pekascape.items.FoodFactory.create_random(room=self.map.random_frame)
 
     @staticmethod
     def _collect_input() -> str:
@@ -58,8 +60,56 @@ class Game:
         return action
 
     def _act_on_input(self, action: str) -> None:
-        if action not in self.allowed_actions:
+        if not action.startswith(tuple(self.allowed_actions)):
             print('sorry, I dont understand that \nAllowed actions are', ','.join(self.allowed_actions))
+
+        action_mapping = {'go': self.player.go,
+                          'fight': self.player.fight,
+                          'pickup': self.player.pickup,
+                          'drop': self.player.drop,
+                          'wield': self.player.wield,
+                          'observe': self.player.observe,
+                          'eat': self.player.eat}
+
+        if action == 'see':
+            self.player.see()
+
+        elif action == 'stats':
+            print(self.player)
+
+        else:
+            action_parsed, subject = self._parse_action(action)
+            print(action_parsed, subject)
+            if action_method := action_mapping.get(action_parsed):
+                action_method(subject)
+            else:
+                print("Try again, I dont understand what ", action, "means")
+
+        # elif action.startswith('go'):
+        #     self.player.go(self._get_subject(action))
+        #
+        # elif action.startswith('fight'):
+        #     self.player.fight(self._get_subject(action))
+        #
+        # elif action.startswith('pickup'):
+        #     self.player.pickup(self._get_subject(action))
+        #
+        # elif action.startswith('drop'):
+        #     self.player.drop(self._get_subject(action))
+        #
+        # elif action.startswith('wield'):
+        #     self.player.wield(self._get_subject(action))
+        #
+        # elif action.startswith('eat'):
+        #     self.player.eat(self._get_subject(action))
+        #
+        # elif action.startswith('observe'):
+        #     self.player.observe(self._get_subject(action))
+
+    @staticmethod
+    def _parse_action(action: str) -> Tuple[str, str]:
+        instructions = action.split()
+        return instructions[0], ' '.join(instructions[1:])
 
     def _play(self) -> None:
         while self.player.alive:
