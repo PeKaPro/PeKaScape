@@ -1,0 +1,3 @@
+
+class PlayerDeadError(ValueError):
+    ...

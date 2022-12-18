@@ -1,27 +1,15 @@
-# generic dependencies
-import random
+from game import CustomGame
 
-# package specific dependencies
-from pekascape import character as ch
-from pekascape import environment as en
-from pekascape import weapon as we
-from pekascape import food as fd
 
-#    first instantiate room
-en.MapFrame.make_world(30, 30)
-en.MapFrame.get_neighbours()
+if __name__ == '__main__':
+    g = CustomGame()
 
-John = ch.Player(name="John")
-Henry = ch.Monster(name="Henry", health=3)
 
-for i in range(500):
-    ch.Monster(attack=random.randint(10, 50))
+# TODO: add some drops from monster ... with some chance some random weapons and random food ...
 
-for x in range(300):
-    # r11.items.append(we.Weapon())
-    we.Weapon()
+# TODO: add hint for player
 
-for x in range(100):
-    fd.Bread()
+# TODO: add some prepared game
+
 
 

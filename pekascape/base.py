@@ -4,26 +4,34 @@ Base module defining elements used by other modules
 As it is newly created, things will be transferred here eventually
 
 """
+import typing
 
-from enum import Enum
-import random
-
-from pekascape.environment import MapFrame
-
-
-class PlayerGameText(Enum):
-    """
-    Enum to encompass some game texts that are related to player
-    """
-    DEAD_INVOKE_ACTION = 'Dear, you are dead, give it up...'
+if typing.TYPE_CHECKING:
+    from pekascape.environment import MapFrame
 
 
 class GameObject:
-    game_objects = list()
 
-    def __init__(self, room = None):
-        if not MapFrame.MapFrames:
-            MapFrame(1, 1)
-            # This is to prevent creation of GameObjects before at least one MapFrame was instantiated.
-        self.game_objects.append(self)
-        self.room = room if room is not None else random.choice(MapFrame.MapFrames)
+    def __init__(self, name, room: 'MapFrame'):
+        self.name = name
+        self.room = room
+
+        self.room.add_content(self)
+
+
+class Character(GameObject):
+
+    def __init__(self, name: str, room: 'MapFrame', health: int, attack: int, defence: int):
+        super().__init__(name, room)
+        self.health = health
+        self.attack = attack
+        self.defence = defence
+
+        self.items = list()
+
+    def die(self) -> None:
+        self.room.remove_content(self)
+
+    def __str__(self):
+        return f"{type(self).__name__} {self.name} \n" \
+               f"with attack {self.attack}, defence {self.defence} and {self.health} health"
