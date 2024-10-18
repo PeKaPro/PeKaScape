@@ -2,7 +2,7 @@ import random
 import time
 from typing import Tuple
 
-from base import Character
+from pekascape.character.character import Character
 
 
 class Battle:

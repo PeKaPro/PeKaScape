@@ -1,9 +1,9 @@
 import random
 from typing import Tuple
 
-import character as ch
-import environment as en
-import pekascape.items
+import pekascape.character.character as ch
+import pekascape.environment.environment as en
+import pekascape.item.items
 
 
 class CustomGame:
@@ -49,10 +49,10 @@ class CustomGame:
             ch.Monster(room=self.map.random_frame, attack=random.randint(10, 50))
 
         for i in range(int(self.weapons)):
-            pekascape.items.WeaponFactory.create_random(room=self.map.random_frame)
+            pekascape.item.items.WeaponFactory.create_random(room=self.map.random_frame)
 
         for i in range(int(self.food)):
-            pekascape.items.FoodFactory.create_random(room=self.map.random_frame)
+            pekascape.item.items.FoodFactory.create_random(room=self.map.random_frame)
 
     @staticmethod
     def _collect_input() -> str:
@@ -60,6 +60,9 @@ class CustomGame:
         return action
 
     def _act_on_input(self, action: str) -> None:
+        if not action:
+            print("Try again, I dont understand what ", action, "means")
+
         if not action.startswith(tuple(self.allowed_actions)):
             print('sorry, I dont understand that \nAllowed actions are', ','.join(self.allowed_actions))
 

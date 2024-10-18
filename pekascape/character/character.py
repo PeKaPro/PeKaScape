@@ -5,18 +5,37 @@ Module defining basic agents of the game
 3. Monster as a class of NPC enemies
 """
 import typing
-import pekascape.items
-from base import Character
+import pekascape.item.items as items
+from pekascape.base.base import GameObject
 
-from game_exceptions import PlayerDeadError
-from mixins import ItemsAccessMixin
+from pekascape.base.exceptions import PlayerDeadError
+
+from pekascape.base.mixins import ItemsAccessMixin
 from pekascape import behaviour
-from pekascape import items
 
-# if typing.TYPE_CHECKING:
-#     from environment import MapFrame
+if typing.TYPE_CHECKING:
+    from pekascape.environment.environment import MapFrame
+
 
 # todo: move printed texts into special enums in base modules
+
+
+class Character(GameObject):
+
+    def __init__(self, name: str, room: 'MapFrame', health: int, attack: int, defence: int):
+        super().__init__(name, room)
+        self.health = health
+        self.attack = attack
+        self.defence = defence
+
+        self.items = list()
+
+    def die(self) -> None:
+        self.room.remove_content(self)
+
+    def __str__(self):
+        return f"{type(self).__name__} {self.name} \n" \
+               f"with attack {self.attack}, defence {self.defence} and {self.health} health"
 
 
 class Player(Character, ItemsAccessMixin):
@@ -43,7 +62,7 @@ class Player(Character, ItemsAccessMixin):
     def pickup(self, item_name: str) -> None:
 
         if self.fully_loaded:
-            print(f"I cant pick up anything, I am fully loaded.\nDrop something first")
+            print("I cant pick up anything, I am fully loaded.\nDrop something first")
             return
 
         if item_name not in self.room.items_by_name:
@@ -60,7 +79,7 @@ class Player(Character, ItemsAccessMixin):
 
     def drop(self, item_name: str) -> None:
         if item_name not in self.items_by_name:
-            print(f"I cant drop something I dont have, check your inventory again")
+            print("I cant drop something I dont have, check your inventory again")
             return
 
         item = self.get_item_by_name(item_name)
@@ -92,7 +111,7 @@ class Player(Character, ItemsAccessMixin):
             return
 
         item = self.get_item_by_name(item_name)
-        if not isinstance(item, pekascape.items.Weapon):
+        if not isinstance(item, items.Weapon):
             print(f"I cannot wield {item_name}, it is not a weapon, it is a {type(item)}")
 
         if self.wielded_weapon:
@@ -104,13 +123,13 @@ class Player(Character, ItemsAccessMixin):
             self.wielded_weapon = item
             self.items.remove(item)
 
-    def eat(self, item_name:str) -> None:
+    def eat(self, item_name: str) -> None:
         if item_name not in self.items_by_name:
             print("I cannot eat something I dont have")
             return
 
         item = self.get_item_by_name(item_name)
-        if not isinstance(item, pekascape.items.Food):
+        if not isinstance(item, items.Food):
             print(f"I cannot eat {item_name}, it is not a food, it is a {type(item)}")
 
         self.items.remove(item)

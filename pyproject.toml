@@ -1,0 +1,28 @@
+
+[tool.flake8]
+max-line-length = 140
+
+
+[tool.pylint]
+max-line-length = 140
+disable = [
+"C0116"  # Missing function or method docstring
+
+]
+min-public-methods = 1
+max-public-methods = 20
+
+
+
+[tool.ruff]
+line-length = 140
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle
+    "F",  # Pyflakes
+    "UP",  # pyupgrade
+    "B",  # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "I",  # isort
+]

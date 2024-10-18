@@ -8,11 +8,12 @@ Module to represent basic environment concepts
 """
 import abc
 import random
-from typing import Literal, List, Tuple, Union
+from typing import Literal, Union
 
-from base import GameObject, Character
-from character import Monster
-from mixins import ItemsAccessMixin
+from pekascape.base.base import GameObject
+from pekascape.base.mixins import ItemsAccessMixin
+from pekascape.character.character import Character
+from pekascape.character.character import Monster
 
 DIRECTION = Literal["north", "south", "east", "west"]
 
@@ -29,8 +30,8 @@ class MapFrame(ItemsAccessMixin):
         self.x = x
         self.y = y
 
-        self.items = list()
-        self.characters: List[Character] = list()
+        self.items = []
+        self.characters: list[Character] = []
 
         self.neighbours = dict()
 
@@ -38,7 +39,7 @@ class MapFrame(ItemsAccessMixin):
         self.neighbours[direction] = adj_frame
 
     @property
-    def position(self) -> Tuple[int, int]:
+    def position(self) -> tuple[int, int]:
         return self.x, self.y
 
     def remove_content(self, subject: Union[Character, GameObject]) -> None:
@@ -56,7 +57,7 @@ class MapFrame(ItemsAccessMixin):
             self.items.append(subject)
 
     @property
-    def characters_by_name(self) -> List[str]:
+    def characters_by_name(self) -> list[str]:
         return [character.name for character in self.characters]
 
     def get_character_by_name(self, character_name: str):
@@ -73,7 +74,7 @@ class Map(abc.ABC):
     """
 
     def __init__(self) -> None:
-        self.map_frames: List['MapFrame'] = []
+        self.map_frames: list['MapFrame'] = []
 
     @property
     def random_frame(self) -> MapFrame:
@@ -119,7 +120,7 @@ class MazeMap(Map):
                     continue
                 map_frame.set_adjacent_frame(direction, mf)
 
-    def _get_adjacent_frames(self, x, y) -> Tuple[DIRECTION, MapFrame]:
+    def _get_adjacent_frames(self, x, y) -> tuple[DIRECTION, MapFrame]:
         directions = {
             "west": (-1, 0),
             "east": (1, 0),

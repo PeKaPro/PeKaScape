@@ -4,10 +4,10 @@ Module incorporating game items and its logic, food, weapons, factories for thos
 import typing
 from random import choices
 
-import base
+from pekascape.base.base import GameObject
 
 if typing.TYPE_CHECKING:
-    from environment import MapFrame
+    from pekascape.environment.environment import MapFrame
 
 
 class FoodConfig:
@@ -25,7 +25,7 @@ class FoodConfig:
         return FoodConfig.HEALING_FACTOR.get(food_identifier, 0)
 
 
-class Food(base.GameObject):
+class Food(GameObject):
     """
     Food is some edible object that has a healing factor - it heals some health to a player
     """
@@ -67,7 +67,7 @@ class WeaponConfig:
                        "katana": 30}
 
 
-class Weapon(base.GameObject):
+class Weapon(GameObject):
     def __init__(self, room: 'MapFrame', material=None, weapon_type=None):
         super().__init__(name=f"{material} {weapon_type}", room=room)
 
