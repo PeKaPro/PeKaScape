@@ -1,9 +1,9 @@
 import random
-from typing import Tuple
 
 import pekascape.character.character as ch
 import pekascape.environment.environment as en
-import pekascape.item.items
+import pekascape.item.food as food
+import pekascape.item.weapon as weapon
 
 
 class CustomGame:
@@ -45,14 +45,14 @@ class CustomGame:
     def _populate_world(self) -> None:
 
         self.player = ch.Player(name=self.player_name, room=self.map.random_frame, health=500, attack=20, defence=20)
-        for i in range(int(self.monsters)):
+        for _ in range(int(self.monsters)):
             ch.Monster(room=self.map.random_frame, attack=random.randint(10, 50))
 
-        for i in range(int(self.weapons)):
-            pekascape.item.items.WeaponFactory.create_random(room=self.map.random_frame)
+        for _ in range(int(self.weapons)):
+            weapon.WeaponFactory.create_random(room=self.map.random_frame)
 
-        for i in range(int(self.food)):
-            pekascape.item.items.FoodFactory.create_random(room=self.map.random_frame)
+        for _ in range(int(self.food)):
+            food.FoodFactory.create_random(room=self.map.random_frame)
 
     @staticmethod
     def _collect_input() -> str:
@@ -110,7 +110,7 @@ class CustomGame:
         #     self.player.observe(self._get_subject(action))
 
     @staticmethod
-    def _parse_action(action: str) -> Tuple[str, str]:
+    def _parse_action(action: str) -> tuple[str, str]:
         instructions = action.split()
         return instructions[0], ' '.join(instructions[1:])
 

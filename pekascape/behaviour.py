@@ -1,6 +1,5 @@
 import random
 import time
-from typing import Tuple
 
 from pekascape.character.character import Character
 
@@ -11,15 +10,15 @@ class Battle:
     """
 
     @staticmethod
-    def _calculate_low_hit(defender_def: int, attacker_attack: int):
+    def _calculate_low_hit(defender_def: int, attacker_attack: int) -> int:
         return int(round((defender_def / attacker_attack), 0))
 
     @staticmethod
-    def _calculate_high_hit(attacker_attack: int, defender_def: int):
+    def _calculate_high_hit(attacker_attack: int, defender_def: int) -> int:
         return int(round((attacker_attack / defender_def), 0))
 
     @classmethod
-    def _get_attack_numbers(cls, attacker, defender) -> Tuple[int, int, int, int]:
+    def _get_attack_numbers(cls, attacker: Character, defender: Character) -> tuple[int, int, int, int]:
         # formula
         # low and high of a hits are computed for attacker and defender
         attacker_l = cls._calculate_low_hit(defender.defence, attacker.attack)

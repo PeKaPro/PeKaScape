@@ -12,8 +12,7 @@ from typing import Literal, Union
 
 from pekascape.base.base import GameObject
 from pekascape.base.mixins import ItemsAccessMixin
-from pekascape.character.character import Character
-from pekascape.character.character import Monster
+from pekascape.character.character import Character, Monster
 
 DIRECTION = Literal["north", "south", "east", "west"]
 
@@ -57,14 +56,14 @@ class MapFrame(ItemsAccessMixin):
             self.items.append(subject)
 
     @property
-    def characters_by_name(self) -> list[str]:
+    def character_names(self) -> list[str]:
         return [character.name for character in self.characters]
 
-    def get_character_by_name(self, character_name: str):
+    def get_character_by_name(self, character_name: str) -> Character:
         return [character for character in self.characters if character.name == character_name][0]
 
     @property
-    def monsters(self):
+    def monsters(self) -> list[Monster]:
         return [char for char in self.characters if isinstance(char, Monster)]
 
 
@@ -74,7 +73,7 @@ class Map(abc.ABC):
     """
 
     def __init__(self) -> None:
-        self.map_frames: list['MapFrame'] = []
+        self.map_frames: list[MapFrame] = []
 
     @property
     def random_frame(self) -> MapFrame:
@@ -120,7 +119,7 @@ class MazeMap(Map):
                     continue
                 map_frame.set_adjacent_frame(direction, mf)
 
-    def _get_adjacent_frames(self, x, y) -> tuple[DIRECTION, MapFrame]:
+    def _get_adjacent_frames(self, x: int, y: int) -> tuple[DIRECTION, MapFrame]:
         directions = {
             "west": (-1, 0),
             "east": (1, 0),

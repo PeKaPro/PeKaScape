@@ -4,14 +4,13 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
+
 import typing
-import pekascape.item.items as items
-from pekascape.base.base import GameObject
 
-from pekascape.base.exceptions import PlayerDeadError
-
-from pekascape.base.mixins import ItemsAccessMixin
 from pekascape import behaviour
+from pekascape.base.base import GameObject
+from pekascape.base.mixins import ItemsAccessMixin
+from pekascape.item import food, weapon
 
 if typing.TYPE_CHECKING:
     from pekascape.environment.environment import MapFrame
@@ -43,17 +42,13 @@ class Player(Character, ItemsAccessMixin):
     Player class - instance of this class is meant to be controlled by real world player
     """
 
-    def __init__(self, name: str, room: 'MapFrame', health=100, attack=1, defence=1):
+    def __init__(self, name: str, room: 'MapFrame', health: int = 100, attack: int = 1, defence: int = 1):
         super().__init__(name, room, health, attack, defence)
         self.wielded_weapon = None
 
     @property
     def alive(self) -> bool:
         return self.health > 0
-
-    def check_alive(self) -> None:
-        if not self.alive:
-            raise PlayerDeadError
 
     @property
     def fully_loaded(self) -> bool:
@@ -74,7 +69,7 @@ class Player(Character, ItemsAccessMixin):
         self.items.append(item)
 
         print(f"I have picked up {item.name}.")
-        if isinstance(item, items.Weapon):
+        if isinstance(item, weapon.Weapon):
             print(f"It has bonus {item.att_bonus} - consider wielding it")
 
     def drop(self, item_name: str) -> None:
@@ -87,7 +82,7 @@ class Player(Character, ItemsAccessMixin):
         self.room.add_content(item)
 
     def see(self) -> None:
-        for direction in self.room.neighbours.keys():
+        for direction in self.room.neighbours:
             if self.room.neighbours.get(direction):
                 print(f"There is passage to the {direction}")
 
@@ -111,7 +106,7 @@ class Player(Character, ItemsAccessMixin):
             return
 
         item = self.get_item_by_name(item_name)
-        if not isinstance(item, items.Weapon):
+        if not isinstance(item, weapon.Weapon):
             print(f"I cannot wield {item_name}, it is not a weapon, it is a {type(item)}")
 
         if self.wielded_weapon:
@@ -129,7 +124,7 @@ class Player(Character, ItemsAccessMixin):
             return
 
         item = self.get_item_by_name(item_name)
-        if not isinstance(item, items.Food):
+        if not isinstance(item, food.Food):
             print(f"I cannot eat {item_name}, it is not a food, it is a {type(item)}")
 
         self.items.remove(item)
@@ -151,7 +146,7 @@ class Player(Character, ItemsAccessMixin):
             self.room = target
             self.see()
 
-    def observe(self, monster_name: str):
+    def observe(self, monster_name: str) -> None:
         if monster_name not in self.room.characters_by_name:
             print(f"There is not monster named {monster_name} in this room")
         monster = self.room.get_character_by_name(monster_name)
