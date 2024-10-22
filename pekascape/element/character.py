@@ -7,10 +7,10 @@ Module defining basic agents of the game
 
 import typing
 
-from pekascape import behaviour
-from pekascape.base.base import GameObject
-from pekascape.base.mixins import ItemsAccessMixin
-from pekascape.item import food, weapon
+from ..behaviour.battle import BasicBattleEngine
+from .base import GameObject, ItemsAccessMixin
+from .food import Food
+from .weapon import Weapon
 
 if typing.TYPE_CHECKING:
     from pekascape.environment.environment import MapFrame
@@ -20,6 +20,9 @@ if typing.TYPE_CHECKING:
 
 
 class Character(GameObject):
+    """
+    Represents basic agent in the game, either player or monster
+    """
 
     def __init__(self, name: str, room: 'MapFrame', health: int, attack: int, defence: int):
         super().__init__(name, room)
@@ -27,7 +30,7 @@ class Character(GameObject):
         self.attack = attack
         self.defence = defence
 
-        self.items = list()
+        self.items = []
 
     def die(self) -> None:
         self.room.remove_content(self)
@@ -69,8 +72,8 @@ class Player(Character, ItemsAccessMixin):
         self.items.append(item)
 
         print(f"I have picked up {item.name}.")
-        if isinstance(item, weapon.Weapon):
-            print(f"It has bonus {item.att_bonus} - consider wielding it")
+        if isinstance(item, Weapon):
+            print(f"It has bonus {item.attack_bonus} - consider wielding it")
 
     def drop(self, item_name: str) -> None:
         if item_name not in self.items_by_name:
@@ -98,7 +101,7 @@ class Player(Character, ItemsAccessMixin):
         else:
             print("Fight is on!")
             monster = self.room.get_character_by_name(other)
-            behaviour.Battle.fight(self, monster)
+            BasicBattleEngine().fight(self, monster)
 
     def wield(self, item_name: str) -> None:
         if item_name not in self.items_by_name:
@@ -106,7 +109,7 @@ class Player(Character, ItemsAccessMixin):
             return
 
         item = self.get_item_by_name(item_name)
-        if not isinstance(item, weapon.Weapon):
+        if not isinstance(item, Weapon):
             print(f"I cannot wield {item_name}, it is not a weapon, it is a {type(item)}")
 
         if self.wielded_weapon:
@@ -124,7 +127,7 @@ class Player(Character, ItemsAccessMixin):
             return
 
         item = self.get_item_by_name(item_name)
-        if not isinstance(item, food.Food):
+        if not isinstance(item, Food):
             print(f"I cannot eat {item_name}, it is not a food, it is a {type(item)}")
 
         self.items.remove(item)
@@ -136,7 +139,7 @@ class Player(Character, ItemsAccessMixin):
             return self.attack + self.wielded_weapon.att_bonus
         return self.attack
 
-    def go(self, direction: str) -> None:
+    def go(self, direction: str) -> None:  # pylint: disable=C0103
         target = self.room.neighbours.get(direction)
         if not target:
             print(f"There is no room in direction of {direction}.")
@@ -154,6 +157,10 @@ class Player(Character, ItemsAccessMixin):
 
 
 class Monster(Character):
+    """
+    Represents NPC enemy in the game
+    """
+
     monster_count = 0
 
     @classmethod

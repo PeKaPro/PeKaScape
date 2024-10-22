@@ -1,12 +1,15 @@
 import random
 
-import pekascape.character.character as ch
-import pekascape.environment.environment as en
-import pekascape.item.food as food
-import pekascape.item.weapon as weapon
+from pekascape.element import Food, Monster, Player, Weapon
+from pekascape.environment.environment import GridMap
 
 
 class CustomGame:
+    """
+    This should represent a custom game, but currently also serves as input-action parser
+    # TODO: refactor this class, split it into input parser and game class
+    """
+
     allowed_actions = ['see', 'go', 'fight', 'pickup', 'drop', 'wield', 'observe', 'stats', 'eat']
 
     def __init__(self) -> None:
@@ -22,7 +25,6 @@ class CustomGame:
         self._parse_config_values()
         self._create_world()
         self._populate_world()
-        self._play()
 
     def _start_new(self) -> None:
         print('hello there, you are starting new game of PeKaScape')
@@ -30,9 +32,9 @@ class CustomGame:
         self.player_name = i
 
     def _get_config(self) -> None:
-        values = list()
-        for value in ['world size (in format of x*y)', 'monster count (int)', 'weapon count (int)', 'food count (int)']:
-            values.append(input(f"please, fill in the value for {value}:"))
+        values = ["5*5", 50, 20, 20]
+        for index, value in enumerate(['world size (in format of x*y)', 'monster count (int)', 'weapon count (int)', 'food count (int)']):
+            values[index] = input(f"please, fill in the value for {value}:")
 
         self.world_size, self.monsters, self.weapons, self.food = values
 
@@ -40,19 +42,19 @@ class CustomGame:
         self.world_size = (int(x) for x in self.world_size.split('*'))
 
     def _create_world(self) -> None:
-        self.map = en.MazeMap(*self.world_size)
+        self.map = GridMap(*self.world_size)
 
     def _populate_world(self) -> None:
 
-        self.player = ch.Player(name=self.player_name, room=self.map.random_frame, health=500, attack=20, defence=20)
+        self.player = Player(name=self.player_name, room=self.map.random_frame, health=500, attack=20, defence=20)
         for _ in range(int(self.monsters)):
-            ch.Monster(room=self.map.random_frame, attack=random.randint(10, 50))
+            Monster(room=self.map.random_frame, attack=random.randint(10, 50))
 
         for _ in range(int(self.weapons)):
-            weapon.WeaponFactory.create_random(room=self.map.random_frame)
+            Weapon.create_random(room=self.map.random_frame)
 
         for _ in range(int(self.food)):
-            food.FoodFactory.create_random(room=self.map.random_frame)
+            Food.create_random(room=self.map.random_frame)
 
     @staticmethod
     def _collect_input() -> str:
@@ -114,6 +116,6 @@ class CustomGame:
         instructions = action.split()
         return instructions[0], ' '.join(instructions[1:])
 
-    def _play(self) -> None:
+    def play(self) -> None:
         while self.player.alive:
             self._act_on_input(self._collect_input())

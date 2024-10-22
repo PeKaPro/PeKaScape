@@ -1,13 +1,18 @@
 import random
 import time
+from typing import TYPE_CHECKING
 
-from pekascape.character.character import Character
+if TYPE_CHECKING:
+    from pekascape.element import Character
 
 
-class Battle:
+class BasicBattleEngine:
     """
     Class defining the battle logic - currently very simple
     """
+
+    def __init__(self):
+        pass
 
     @staticmethod
     def _calculate_low_hit(defender_def: int, attacker_attack: int) -> int:
@@ -18,7 +23,7 @@ class Battle:
         return int(round((attacker_attack / defender_def), 0))
 
     @classmethod
-    def _get_attack_numbers(cls, attacker: Character, defender: Character) -> tuple[int, int, int, int]:
+    def _get_attack_numbers(cls, attacker: 'Character', defender: 'Character') -> tuple[int, int, int, int]:
         # formula
         # low and high of a hits are computed for attacker and defender
         attacker_l = cls._calculate_low_hit(defender.defence, attacker.attack)
@@ -35,7 +40,10 @@ class Battle:
         return attacker_l, attacker_h, defender_l, defender_h
 
     @classmethod
-    def fight(cls, attacker: Character, defender: Character) -> None:
+    def fight(cls, attacker: 'Character', defender: 'Character') -> None:
+        from pekascape.element import Character  # pylint: disable=import-outside-toplevel
+        # TODO: remove when circular imports are fixed
+
         if not isinstance(attacker, Character):
             raise TypeError(f"Expected type Character, got {type(attacker)}")
 

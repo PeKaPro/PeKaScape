@@ -11,6 +11,9 @@ if TYPE_CHECKING:
 
 
 class GameObject:
+    """
+    Basic class for all objects in the game, it has a name and a room it is in
+    """
 
     def __init__(self, name: str, room: 'MapFrame'):
         self.name = name
@@ -20,3 +23,18 @@ class GameObject:
 
     def __str__(self) -> str:
         return f"{type(self).__name__} {self.name} in {self.room}"
+
+
+class ItemsAccessMixin:
+    """
+    Mixin for classes that have items
+    """
+
+    items: list[GameObject]
+
+    @property
+    def items_by_name(self) -> list[str]:
+        return [item.name for item in self.items]
+
+    def get_item_by_name(self, item_name: str) -> GameObject:
+        return [item for item in self.items if item.name == item_name][0]
