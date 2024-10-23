@@ -4,6 +4,8 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
+import asyncio
+import random
 from random import randint
 from typing import TYPE_CHECKING, Optional, Self
 
@@ -36,8 +38,20 @@ class Character(GameObject):
         self.room.remove_content(self)
 
     def __str__(self):
-        return f"{type(self).__name__} {self.name} \n" \
-               f"with attack {self.attack}, defence {self.defence} and {self.health} health"
+        return f"{type(self).__name__} {self.name} with attack {self.attack}, defence {self.defence} and {self.health} health"
+
+    @property
+    def alive(self) -> bool:
+        return self.health > 0
+
+    def go(self, direction: str) -> None:  # pylint: disable=C0103
+        target: Optional[MapTile] = self.room.neighbours.get(direction)
+        if not target:
+            print(f"There is no room in direction of {direction}.")
+        else:
+            target.characters.append(self)
+            self.room.characters.remove(self)
+            self.room = target
 
 
 class Player(Character, ItemsAccessMixin):
@@ -53,10 +67,6 @@ class Player(Character, ItemsAccessMixin):
 
     def __repr__(self):
         return f"{self.name} with attack {self.total_attack}, defence {self.defence} and {self.health} health"
-
-    @property
-    def alive(self) -> bool:
-        return self.health > 0
 
     @property
     def fully_loaded(self) -> bool:
@@ -148,21 +158,15 @@ class Player(Character, ItemsAccessMixin):
             return self.attack + self.wielded_weapon.att_bonus
         return self.attack
 
-    def go(self, direction: str) -> None:  # pylint: disable=C0103
-        target: Optional[MapFrame] = self.room.neighbours.get(direction)
-        if not target:
-            print(f"There is no room in direction of {direction}.")
-        else:
-            target.characters.append(self)
-            self.room.characters.remove(self)
-            self.room = target
-            self.see()
-
     def observe(self, monster_name: str) -> None:
         if monster_name not in self.room.character_names:
             print(f"There is not monster named {monster_name} in this room")
         monster = self.room.get_character_by_name(monster_name)
         print(monster)
+
+    def go(self, direction: str) -> None:
+        super().go(direction)
+        self.see()
 
 
 class Monster(Character):
@@ -172,16 +176,19 @@ class Monster(Character):
 
     monster_count = 0
 
+    CHANCE_ATTACK = 0.05
+    CHANCE_MOVE = 0.1
+
     @classmethod
     def track_count(cls) -> None:
         cls.monster_count += 1
 
     @classmethod
-    def get_random(cls, room: 'MapFrame') -> Self:
+    def get_random(cls, room: 'MapTile') -> Self:
         attack = randint(10, 50)
         return cls(room, attack)
 
-    def __init__(self, room: 'MapFrame', health: int = 100, attack: int = 1, defence: int = 1):
+    def __init__(self, room: 'MapTile', health: int = 100, attack: int = 1, defence: int = 1):
         self.track_count()
         name = f"Monster{self.monster_count}"
         super().__init__(name, room, health, attack, defence)
@@ -190,9 +197,28 @@ class Monster(Character):
         pass
 
     def die(self) -> None:
-        self.drop_items_on_death()
+        self.drop_items()
         super().die()
 
-    def drop_items_on_death(self) -> None:
+    def drop_items(self) -> None:
         while self.items:
             self.room.add_content(self.items.pop())
+
+    async def act(self):
+        # attack player if in the same room with chance 20% +
+        # move to another room with chance 10%
+
+        while self.alive:
+            await asyncio.sleep(2)
+            await self._act_go()
+            await self._act_fight()
+
+    async def _act_fight(self):
+        if random.random() < self.CHANCE_ATTACK:
+            if character := self.room.get_player():
+                BasicBattleEngine().fight(self, character)
+
+    async def _act_go(self):
+        if random.random() < self.CHANCE_MOVE:
+            direction = random.choice(list(self.room.neighbours.keys()))
+            self.go(direction)

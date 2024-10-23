@@ -7,9 +7,10 @@ Module to represent basic environment concepts
 """
 import abc
 import random
-from typing import Literal
+from typing import Literal, Optional
 
-from pekascape.element import Character, Monster
+from element import Food, Weapon
+from pekascape.element import Character, Monster, Player
 from pekascape.element.base import GameObject, ItemsAccessMixin
 
 DIRECTION = Literal["north", "south", "east", "west"]
@@ -35,14 +36,21 @@ class MapTile(ItemsAccessMixin):
     def set_adjacent_frame(self, direction: DIRECTION, adj_frame: 'MapTile') -> None:
         self.neighbours[direction] = adj_frame
 
+    def get_player(self) -> Optional[Player]:
+        for character in self.characters:
+            if isinstance(character, Player):
+                return character
+        return None
+
     @property
     def coordinates(self) -> tuple[int, int]:
         return self.x_coord, self.y_coord
 
-    def remove_content(self, _object: GameObject) -> None:
+    def remove_content(self, _object: Character | Weapon | Food) -> None:
         if _object in self.items:
             self.items.remove(_object)
             return
+
         if _object in self.characters:
             self.characters.remove(_object)
             return

@@ -96,6 +96,8 @@ class GameEngine:
 
     async def play(self) -> None:
         control_collection_task = asyncio.create_task(self.control.collect_input())
+        _monster_actions = [asyncio.create_task(monster.act()) for monster in self.monsters]
+
         print("Game started")
         while self.player.alive:
             await self.play_turn()
@@ -108,4 +110,12 @@ class GameEngine:
 
                 async with self.command_semaphore:
                     self._act_on_input(action)
+
+            await self.act()
             await asyncio.sleep(0.5)
+
+    async def act(self) -> None:
+        """
+        This method should be called every turn and should be responsible for handling all the NPC actions
+        """
+        pass
