@@ -96,7 +96,7 @@ class Player(Character, ItemsAccessMixin):
             print(f"There is {item.name} laying down")
 
     def fight(self, other: str) -> None:
-        if other not in self.room.characters_by_name:
+        if other not in self.room.character_names:
             print(f"There is not monster named {other} in this room")
         else:
             print("Fight is on!")
@@ -140,7 +140,7 @@ class Player(Character, ItemsAccessMixin):
         return self.attack
 
     def go(self, direction: str) -> None:  # pylint: disable=C0103
-        target = self.room.neighbours.get(direction)
+        target: typing.Optional[MapFrame] = self.room.neighbours.get(direction)
         if not target:
             print(f"There is no room in direction of {direction}.")
         else:
@@ -150,7 +150,7 @@ class Player(Character, ItemsAccessMixin):
             self.see()
 
     def observe(self, monster_name: str) -> None:
-        if monster_name not in self.room.characters_by_name:
+        if monster_name not in self.room.character_names:
             print(f"There is not monster named {monster_name} in this room")
         monster = self.room.get_character_by_name(monster_name)
         print(monster)

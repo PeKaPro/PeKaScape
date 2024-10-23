@@ -1,7 +1,9 @@
+import asyncio
 import random
 
 from pekascape.element import Food, Monster, Player, Weapon
 from pekascape.environment.environment import GridMap
+from user_control.user_control import UserControl
 
 
 class CustomGame:
@@ -10,15 +12,18 @@ class CustomGame:
     # TODO: refactor this class, split it into input parser and game class
     """
 
-    allowed_actions = ['see', 'go', 'fight', 'pickup', 'drop', 'wield', 'observe', 'stats', 'eat']
-
     def __init__(self) -> None:
+
         self.world_size = None
         self.monsters = None
         self.weapons = None
         self.food = None
 
         self.world = None
+
+        self.command_queue = asyncio.Queue()
+        self.command_semaphore = asyncio.Semaphore(1)
+        self.control = UserControl(self.command_queue, self.command_semaphore)
 
         self._start_new()
         self._get_config()
@@ -45,6 +50,7 @@ class CustomGame:
         self.map = GridMap(*self.world_size)
 
     def _populate_world(self) -> None:
+        print("Populating world with monsters, weapons and food")
 
         self.player = Player(name=self.player_name, room=self.map.random_frame, health=500, attack=20, defence=20)
         for _ in range(int(self.monsters)):
@@ -56,17 +62,14 @@ class CustomGame:
         for _ in range(int(self.food)):
             Food.create_random(room=self.map.random_frame)
 
+        print("done")
+
     @staticmethod
-    def _collect_input() -> str:
-        action = input('What do you want to do:')
-        return action
+    def _parse_action(action: str) -> tuple[str, str]:
+        instructions = action.split()
+        return instructions[0], ' '.join(instructions[1:])
 
     def _act_on_input(self, action: str) -> None:
-        if not action:
-            print("Try again, I dont understand what ", action, "means")
-
-        if not action.startswith(tuple(self.allowed_actions)):
-            print('sorry, I dont understand that \nAllowed actions are', ','.join(self.allowed_actions))
 
         action_mapping = {'go': self.player.go,
                           'fight': self.player.fight,
@@ -90,32 +93,18 @@ class CustomGame:
             else:
                 print("Try again, I dont understand what ", action, "means")
 
-        # elif action.startswith('go'):
-        #     self.player.go(self._get_subject(action))
-        #
-        # elif action.startswith('fight'):
-        #     self.player.fight(self._get_subject(action))
-        #
-        # elif action.startswith('pickup'):
-        #     self.player.pickup(self._get_subject(action))
-        #
-        # elif action.startswith('drop'):
-        #     self.player.drop(self._get_subject(action))
-        #
-        # elif action.startswith('wield'):
-        #     self.player.wield(self._get_subject(action))
-        #
-        # elif action.startswith('eat'):
-        #     self.player.eat(self._get_subject(action))
-        #
-        # elif action.startswith('observe'):
-        #     self.player.observe(self._get_subject(action))
-
-    @staticmethod
-    def _parse_action(action: str) -> tuple[str, str]:
-        instructions = action.split()
-        return instructions[0], ' '.join(instructions[1:])
-
-    def play(self) -> None:
+    async def play(self) -> None:
+        control_collection_task = asyncio.create_task(self.control.collect_input())
+        print("Game started")
         while self.player.alive:
-            self._act_on_input(self._collect_input())
+            await self.play_turn()
+        control_collection_task.cancel()
+
+    async def play_turn(self) -> None:
+        while True:
+            if not self.command_queue.empty():
+                action = await self.command_queue.get()
+
+                async with self.command_semaphore:
+                    self._act_on_input(action)
+            await asyncio.sleep(0.5)
