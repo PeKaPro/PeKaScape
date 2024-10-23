@@ -11,7 +11,7 @@ class BasicBattleEngine:
     Class defining the battle logic - currently very simple
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod

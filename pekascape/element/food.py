@@ -4,7 +4,7 @@ Module incorporating game items and its logic, food, weapons, factories for thos
 from random import choices
 from typing import TYPE_CHECKING, Self
 
-from pekascape.element.base import GameObject
+from .base import GameObject
 
 if TYPE_CHECKING:
     from pekascape.environment.environment import MapTile

@@ -25,16 +25,23 @@ class GameObject:
         return f"{type(self).__name__} {self.name} in {self.room}"
 
 
+class ItemBase(GameObject):
+    """
+    Base class for items in the game
+    """
+    pass
+
+
 class ItemsAccessMixin:
     """
     Mixin for classes that have items
     """
 
-    items: list[GameObject]
+    items: list[ItemBase]
 
     @property
     def items_by_name(self) -> list[str]:
         return [item.name for item in self.items]
 
-    def get_item_by_name(self, item_name: str) -> GameObject:
+    def get_item_by_name(self, item_name: str) -> ItemBase:
         return [item for item in self.items if item.name == item_name][0]

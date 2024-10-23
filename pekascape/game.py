@@ -89,10 +89,14 @@ class GameEngine:
 
         else:
             action_parsed, subject = self._parse_action(action)
-            if action_method := action_mapping.get(action_parsed):
+            if not (action_method := action_mapping.get(action_parsed)):
+                print("Try again, I dont understand what ", action, "means")
+                return
+
+            if subject:
                 action_method(subject)
             else:
-                print("Try again, I dont understand what ", action, "means")
+                action_method()
 
     async def play(self) -> None:
         control_collection_task = asyncio.create_task(self.control.collect_input())

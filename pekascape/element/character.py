@@ -37,7 +37,7 @@ class Character(GameObject):
     def die(self) -> None:
         self.room.remove_content(self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{type(self).__name__} {self.name} with attack {self.attack}, defence {self.defence} and {self.health} health"
 
     @property
@@ -65,7 +65,7 @@ class Player(Character, ItemsAccessMixin):
         super().__init__(name, room, health, attack, defence)
         self.wielded_weapon = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.name} with attack {self.total_attack}, defence {self.defence} and {self.health} health"
 
     @property
@@ -204,7 +204,7 @@ class Monster(Character):
         while self.items:
             self.room.add_content(self.items.pop())
 
-    async def act(self):
+    async def act(self) -> None:
         # attack player if in the same room with chance 20% +
         # move to another room with chance 10%
 
@@ -213,12 +213,12 @@ class Monster(Character):
             await self._act_go()
             await self._act_fight()
 
-    async def _act_fight(self):
+    async def _act_fight(self) -> None:
         if random.random() < self.CHANCE_ATTACK:
             if character := self.room.get_player():
                 BasicBattleEngine().fight(self, character)
 
-    async def _act_go(self):
+    async def _act_go(self) -> None:
         if random.random() < self.CHANCE_MOVE:
             direction = random.choice(list(self.room.neighbours.keys()))
             self.go(direction)
