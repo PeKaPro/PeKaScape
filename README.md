@@ -4,7 +4,7 @@ RPG game that serves a main purpose of teaching me how to code.
 
 # Roadmap
 
-## class MapFrame
+## class MapTile
 - [x] single location, physical space notion
 
 ## class Map

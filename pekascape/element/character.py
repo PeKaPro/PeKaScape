@@ -13,7 +13,7 @@ from .food import Food
 from .weapon import Weapon
 
 if TYPE_CHECKING:
-    from pekascape.environment.environment import MapFrame
+    from pekascape.environment.environment import MapTile
 
 
 # todo: move printed texts into special enums in base modules
@@ -24,7 +24,7 @@ class Character(GameObject):
     Represents basic agent in the game, either player or monster
     """
 
-    def __init__(self, name: str, room: 'MapFrame', health: int, attack: int, defence: int):
+    def __init__(self, name: str, room: 'MapTile', health: int, attack: int, defence: int):
         super().__init__(name, room)
         self.health = health
         self.attack = attack
@@ -45,7 +45,7 @@ class Player(Character, ItemsAccessMixin):
     Player class - instance of this class is meant to be controlled by real world player
     """
 
-    def __init__(self, name: str, room: 'MapFrame', attack: int = 1, defence: int = 1):
+    def __init__(self, name: str, room: 'MapTile', attack: int = 1, defence: int = 1):
         self.max_health = health = 100
 
         super().__init__(name, room, health, attack, defence)

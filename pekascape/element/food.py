@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Self
 from pekascape.element.base import GameObject
 
 if TYPE_CHECKING:
-    from pekascape.environment.environment import MapFrame
+    from pekascape.environment.environment import MapTile
 
 
 class Food(GameObject):
@@ -35,11 +35,11 @@ class Food(GameObject):
         )[0]
 
     @classmethod
-    def create_random(cls, room: 'MapFrame') -> Self:
+    def create_random(cls, room: 'MapTile') -> Self:
         food_name = cls.get_random_food()
         return Food(name=food_name, room=room)
 
-    def __init__(self, name: str, room: 'MapFrame') -> None:
+    def __init__(self, name: str, room: 'MapTile') -> None:
         super().__init__(name, room=room)
 
     @property

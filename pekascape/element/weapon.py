@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional, Self
 from pekascape.element.base import GameObject
 
 if TYPE_CHECKING:
-    from pekascape.environment.environment import MapFrame
+    from pekascape.environment.environment import MapTile
 
 
 class Weapon(GameObject):
@@ -51,12 +51,12 @@ class Weapon(GameObject):
         )[0]
 
     @classmethod
-    def create_random(cls, room: 'MapFrame') -> Self:
+    def create_random(cls, room: 'MapTile') -> Self:
         material = cls.get_random_material()
         weapon_type = cls.get_random_weapon_type()
         return cls(room, material, weapon_type)
 
-    def __init__(self, room: 'MapFrame', material: Optional[str] = None, weapon_type: Optional[str] = None) -> None:
+    def __init__(self, room: 'MapTile', material: Optional[str] = None, weapon_type: Optional[str] = None) -> None:
         super().__init__(name=f"{material} {weapon_type}", room=room)
 
         self.material = material

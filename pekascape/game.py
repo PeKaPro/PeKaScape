@@ -22,45 +22,45 @@ class GameEngine:
         for index, value in enumerate(['world size (in format of x*y)', 'monster count (int)', 'weapon count (int)', 'food count (int)']):
             values[index] = input(f"please, fill in the value for {value}:")
 
-        world_size, monsters, weapons, food = values
+        world_size, monsters_count, weapons, food = values
         world_size = (int(x) for x in world_size.split('*'))
 
         world_map = GridMap(*world_size)
 
         # populate
-        player = Player(name=player_name, room=world_map.random_frame, attack=20, defence=20)
-        for _ in range(int(monsters)):
-            Monster(room=world_map.random_frame, attack=random.randint(10, 50))
+        player = Player(name=player_name, room=world_map.random_tile, attack=20, defence=20)
+
+        monsters = [Monster(room=world_map.random_tile, attack=random.randint(10, 50)) for _ in range(int(monsters_count))]
 
         for _ in range(int(weapons)):
-            Weapon.create_random(room=world_map.random_frame)
+            Weapon.create_random(room=world_map.random_tile)
 
         for _ in range(int(food)):
-            Food.create_random(room=world_map.random_frame)
+            Food.create_random(room=world_map.random_tile)
 
-        return cls(player, world_map)
+        return cls(player, world_map, monsters)
 
     @classmethod
     def create_small_game(cls) -> Self:
         world_map = GridMap(5, 5)
-        player = Player(name='Peka', room=world_map.random_frame, attack=1, defence=1)
+        player = Player(name='Peka', room=world_map.random_tile, attack=1, defence=1)
 
         monster_count, weapon_count, food_count = 20, 10, 5
 
-        for _ in range(monster_count):
-            Monster.get_random(room=world_map.random_frame)
+        monsters = [Monster.get_random(room=world_map.random_tile) for _ in range(monster_count)]
 
         for _ in range(weapon_count):
-            Weapon.create_random(room=world_map.random_frame)
+            Weapon.create_random(room=world_map.random_tile)
 
         for _ in range(food_count):
-            Food.create_random(room=world_map.random_frame)
+            Food.create_random(room=world_map.random_tile)
 
-        return cls(player, world_map)
+        return cls(player, world_map, monsters)
 
-    def __init__(self, player: Player, world_map: Map) -> None:
+    def __init__(self, player: Player, world_map: Map, monsters: list[Monster]) -> None:
         self.player = player
         self.world_map = world_map
+        self.monsters = monsters
 
         self.command_queue = asyncio.Queue()
         self.command_semaphore = asyncio.Semaphore(1)
@@ -89,7 +89,6 @@ class GameEngine:
 
         else:
             action_parsed, subject = self._parse_action(action)
-            print(action_parsed, subject)
             if action_method := action_mapping.get(action_parsed):
                 action_method(subject)
             else:

@@ -7,7 +7,7 @@ As it is newly created, things will be transferred here eventually
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pekascape.environment.environment import MapFrame
+    from pekascape.environment.environment import MapTile
 
 
 class GameObject:
@@ -15,7 +15,7 @@ class GameObject:
     Basic class for all objects in the game, it has a name and a room it is in
     """
 
-    def __init__(self, name: str, room: 'MapFrame'):
+    def __init__(self, name: str, room: 'MapTile'):
         self.name = name
         self.room = room
 
