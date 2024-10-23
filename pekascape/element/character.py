@@ -9,7 +9,7 @@ import random
 from random import randint
 from typing import TYPE_CHECKING, Optional, Self
 
-from ..behaviour.battle import BasicBattleEngine
+from pekascape.behaviour.battle import BasicBattleEngine
 from .base import GameObject, ItemsAccessMixin
 from .food import Food
 from .weapon import Weapon
@@ -26,19 +26,38 @@ class Character(GameObject):
     Represents basic agent in the game, either player or monster
     """
 
-    def __init__(self, name: str, room: 'MapTile', health: int, attack: int, defence: int):
+    max_health = 100
+
+    def __init__(self, name: str, room: 'MapTile', attack: int, defence: int):
         super().__init__(name, room)
-        self.health = health
-        self.attack = attack
-        self.defence = defence
+        self._health = self.max_health
+        self._attack = attack
+        self._defence = defence
 
         self.items = []
 
     def die(self) -> None:
+        print(f"{self.name} has died.")
         self.room.remove_content(self)
 
     def __str__(self) -> str:
         return f"{type(self).__name__} {self.name} with attack {self.attack}, defence {self.defence} and {self.health} health"
+
+    @property
+    def health(self) -> int:
+        return self._health
+
+    @health.setter
+    def health(self, value: int) -> None:
+        self._health = min([value, self.max_health])
+
+    @property
+    def attack(self) -> int:
+        return self._attack
+
+    @property
+    def defence(self) -> int:
+        return self._defence
 
     @property
     def alive(self) -> bool:
@@ -59,14 +78,18 @@ class Player(Character, ItemsAccessMixin):
     Player class - instance of this class is meant to be controlled by real world player
     """
 
+    max_health = 100
+
     def __init__(self, name: str, room: 'MapTile', attack: int = 1, defence: int = 1):
-        self.max_health = health = 100
 
-        super().__init__(name, room, health, attack, defence)
-        self.wielded_weapon = None
+        super().__init__(name, room, attack, defence)
+        self.wielded_weapon: Optional[Weapon] = None
 
-    def __repr__(self) -> str:
-        return f"{self.name} with attack {self.total_attack}, defence {self.defence} and {self.health} health"
+    @property
+    def attack(self) -> int:
+        if self.wielded_weapon:
+            return self._attack + self.wielded_weapon.attack_bonus
+        return self.attack
 
     @property
     def fully_loaded(self) -> bool:
@@ -111,11 +134,11 @@ class Player(Character, ItemsAccessMixin):
             print(f"There is {item.name} laying down")
 
     def fight(self, other: str) -> None:
-        if other not in self.room.character_names:
-            print(f"There is not monster named {other} in this room")
+        if not (monster := self.room.get_character_by_name(other)):
+            print(f"There is no monster named {other} in this room")
+            return
         else:
             print("Fight is on!")
-            monster = self.room.get_character_by_name(other)
             BasicBattleEngine().fight(self, monster)
 
     def wield(self, item_name: str) -> None:
@@ -133,6 +156,7 @@ class Player(Character, ItemsAccessMixin):
             self.items.append(self.wielded_weapon)
             self.wielded_weapon = item
         else:
+            print(f"I am now wielding {item_name}")
             self.wielded_weapon = item
             self.items.remove(item)
 
@@ -152,16 +176,11 @@ class Player(Character, ItemsAccessMixin):
         self.items.remove(item)
         self.health = max([self.max_health, self.health + item.healing_factor])
 
-    @property
-    def total_attack(self) -> int:
-        if self.wielded_weapon:
-            return self.attack + self.wielded_weapon.att_bonus
-        return self.attack
-
     def observe(self, monster_name: str) -> None:
-        if monster_name not in self.room.character_names:
+        if not (monster := self.room.get_character_by_name(monster_name)):
             print(f"There is not monster named {monster_name} in this room")
-        monster = self.room.get_character_by_name(monster_name)
+            return
+
         print(monster)
 
     def go(self, direction: str) -> None:
@@ -188,10 +207,10 @@ class Monster(Character):
         attack = randint(10, 50)
         return cls(room, attack)
 
-    def __init__(self, room: 'MapTile', health: int = 100, attack: int = 1, defence: int = 1):
+    def __init__(self, room: 'MapTile', attack: int = 1, defence: int = 1):
         self.track_count()
         name = f"Monster{self.monster_count}"
-        super().__init__(name, room, health, attack, defence)
+        super().__init__(name, room, attack, defence)
 
     def fight(self, other: Character) -> None:
         pass
@@ -211,7 +230,7 @@ class Monster(Character):
         while self.alive:
             await asyncio.sleep(2)
             await self._act_go()
-            await self._act_fight()
+            # await self._act_fight()
 
     async def _act_fight(self) -> None:
         if random.random() < self.CHANCE_ATTACK:

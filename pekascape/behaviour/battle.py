@@ -65,9 +65,10 @@ class BasicBattleEngine:
 
             time.sleep(0.4)
 
-            if attacker.health < 0:
-                print('Too bad, you died...')
-                attacker.die()
-                return
+        if attacker.health <= 0:
+            attacker.die()
+            return
 
-        defender.die()
+        if defender.health <= 0:
+            defender.die()
+            return

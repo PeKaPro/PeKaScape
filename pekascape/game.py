@@ -45,7 +45,7 @@ class GameEngine:
         world_map = GridMap(5, 5)
         player = Player(name='Peka', room=world_map.random_tile, attack=1, defence=1)
 
-        monster_count, weapon_count, food_count = 20, 10, 5
+        monster_count, weapon_count, food_count = 20, 100, 5
 
         monsters = [Monster.get_random(room=world_map.random_tile) for _ in range(monster_count)]
 

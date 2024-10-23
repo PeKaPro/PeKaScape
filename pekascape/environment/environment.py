@@ -65,8 +65,10 @@ class MapTile(ItemsAccessMixin):
     def character_names(self) -> list[str]:
         return [character.name for character in self.characters]
 
-    def get_character_by_name(self, character_name: str) -> Character:
-        return [character for character in self.characters if character.name == character_name][0]
+    def get_character_by_name(self, character_name: str) -> Character | None:
+        for character in self.characters:
+            if character.name == character_name:
+                return character
 
     @property
     def monsters(self) -> list[Monster]:
