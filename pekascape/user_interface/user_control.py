@@ -17,9 +17,9 @@ class UserControl:
     def commands(self) -> str:
         return ', '.join(self._commands)
 
-    async def _collect_user_command(self):
+    async def _collect_user_command(self) -> str | None:
         async with self.semaphore:
-            command = await aioconsole.ainput('What do you want to do next?:')
+            command: str = await aioconsole.ainput('What do you want to do next?:')
 
             if not command:
                 print("Empty command, try again")
@@ -31,7 +31,7 @@ class UserControl:
 
             return command
 
-    async def collect_input(self):
+    async def collect_input(self) -> None:
         while True:
             command = await self._collect_user_command()
             if not command:

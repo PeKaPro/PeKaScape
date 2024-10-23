@@ -3,7 +3,7 @@ import random
 from typing import Self
 
 from pekascape.element import Food, Monster, Player, Weapon
-from pekascape.environment.environment import GridMap
+from pekascape.environment.environment import GridMap, Map
 from pekascape.user_interface.user_control import UserControl
 
 
@@ -14,7 +14,7 @@ class GameEngine:
     """
 
     @classmethod
-    async def create_custom_game(cls) -> Self:
+    def create_custom_game(cls) -> Self:
         print('hello there, you are starting new game of PeKaScape')
         player_name = input("please type in your name:")
 
@@ -28,7 +28,7 @@ class GameEngine:
         world_map = GridMap(*world_size)
 
         # populate
-        player = Player(name=player_name, room=world_map.random_frame, health=500, attack=20, defence=20)
+        player = Player(name=player_name, room=world_map.random_frame, attack=20, defence=20)
         for _ in range(int(monsters)):
             Monster(room=world_map.random_frame, attack=random.randint(10, 50))
 
@@ -38,9 +38,27 @@ class GameEngine:
         for _ in range(int(food)):
             Food.create_random(room=world_map.random_frame)
 
-        return cls(player)
+        return cls(player, world_map)
 
-    def __init__(self, player, world_map) -> None:
+    @classmethod
+    def create_small_game(cls) -> Self:
+        world_map = GridMap(5, 5)
+        player = Player(name='Peka', room=world_map.random_frame, attack=1, defence=1)
+
+        monster_count, weapon_count, food_count = 20, 10, 5
+
+        for _ in range(monster_count):
+            Monster.get_random(room=world_map.random_frame)
+
+        for _ in range(weapon_count):
+            Weapon.create_random(room=world_map.random_frame)
+
+        for _ in range(food_count):
+            Food.create_random(room=world_map.random_frame)
+
+        return cls(player, world_map)
+
+    def __init__(self, player: Player, world_map: Map) -> None:
         self.player = player
         self.world_map = world_map
 

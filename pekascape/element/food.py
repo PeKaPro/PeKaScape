@@ -16,15 +16,15 @@ class Food(GameObject):
     """
 
     HEALING_FACTOR = {
-        "Apple": 1,
-        "Bread": 3,
-        "Fish": 5,
+        "apple": 1,
+        "bread": 3,
+        "fish": 5,
     }
 
     FOOD_PROBS = {
-        "Apple": 0.5,
-        "Bread": 0.3,
-        "Fish": 0.2,
+        "apple": 0.5,
+        "bread": 0.3,
+        "fish": 0.2,
     }
 
     @classmethod

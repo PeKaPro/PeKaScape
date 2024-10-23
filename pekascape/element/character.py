@@ -4,15 +4,15 @@ Module defining basic agents of the game
 2. Player as a class meant to represent human player
 3. Monster as a class of NPC enemies
 """
-
-import typing
+from random import randint
+from typing import TYPE_CHECKING, Optional, Self
 
 from ..behaviour.battle import BasicBattleEngine
 from .base import GameObject, ItemsAccessMixin
 from .food import Food
 from .weapon import Weapon
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from pekascape.environment.environment import MapFrame
 
 
@@ -45,9 +45,14 @@ class Player(Character, ItemsAccessMixin):
     Player class - instance of this class is meant to be controlled by real world player
     """
 
-    def __init__(self, name: str, room: 'MapFrame', health: int = 100, attack: int = 1, defence: int = 1):
+    def __init__(self, name: str, room: 'MapFrame', attack: int = 1, defence: int = 1):
+        self.max_health = health = 100
+
         super().__init__(name, room, health, attack, defence)
         self.wielded_weapon = None
+
+    def __repr__(self):
+        return f"{self.name} with attack {self.total_attack}, defence {self.defence} and {self.health} health"
 
     @property
     def alive(self) -> bool:
@@ -122,6 +127,10 @@ class Player(Character, ItemsAccessMixin):
             self.items.remove(item)
 
     def eat(self, item_name: str) -> None:
+        """
+        Eating restores health, player can only eat food, health cannot exceed max_health
+        """
+
         if item_name not in self.items_by_name:
             print("I cannot eat something I dont have")
             return
@@ -131,7 +140,7 @@ class Player(Character, ItemsAccessMixin):
             print(f"I cannot eat {item_name}, it is not a food, it is a {type(item)}")
 
         self.items.remove(item)
-        self.health += item.healing_factor  # TODO: LOL, you can increase health without limit...
+        self.health = max([self.max_health, self.health + item.healing_factor])
 
     @property
     def total_attack(self) -> int:
@@ -140,7 +149,7 @@ class Player(Character, ItemsAccessMixin):
         return self.attack
 
     def go(self, direction: str) -> None:  # pylint: disable=C0103
-        target: typing.Optional[MapFrame] = self.room.neighbours.get(direction)
+        target: Optional[MapFrame] = self.room.neighbours.get(direction)
         if not target:
             print(f"There is no room in direction of {direction}.")
         else:
@@ -166,6 +175,11 @@ class Monster(Character):
     @classmethod
     def track_count(cls) -> None:
         cls.monster_count += 1
+
+    @classmethod
+    def get_random(cls, room: 'MapFrame') -> Self:
+        attack = randint(10, 50)
+        return cls(room, attack)
 
     def __init__(self, room: 'MapFrame', health: int = 100, attack: int = 1, defence: int = 1):
         self.track_count()

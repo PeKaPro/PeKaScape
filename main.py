@@ -1,9 +1,9 @@
-from game import CustomGame
+from game import GameEngine
 import asyncio
 
 
 async def main():
-    g = CustomGame()
+    g = GameEngine.create_small_game()
     await g.play()
 
 
