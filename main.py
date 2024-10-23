@@ -17,6 +17,3 @@ if __name__ == '__main__':
 # TODO: add hint for player
 
 # TODO: add some prepared game
-
-
-
