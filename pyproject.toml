@@ -19,13 +19,26 @@ line-length = 140
 
 [tool.ruff.lint]
 select = [
-    "E",  # pycodestyle
+    # https://docs.astral.sh/ruff/rules/
+
     "F",  # Pyflakes
+    "E",  # pycodestyle
+    "W",  # pycodestyle
+    "C",  # McCabe
+    "I",  # isort
+    "N",  # pep8-naming
+#    "D",  # pydocstyle
+
     "UP",  # pyupgrade
     "B",  # flake8-bugbear
+#    "S",  # flake8-bandit
+    "A",  # flake8-builtins
+
+    "G",  # flake8-logging-format
+    "PIE", # flake8-pie
     "SIM",  # flake8-simplify
-    "I",  # isort
-    "ANN"  # flake8-annotations
+    "ANN",  # flake8-annotations
+    "TYP",  # mypy
 ]
 ignore = [
 "ANN101",  # Missing type annotation for self in method

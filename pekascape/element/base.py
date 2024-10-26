@@ -29,7 +29,6 @@ class ItemBase(GameObject):
     """
     Base class for items in the game
     """
-    pass
 
 
 class ItemsAccessMixin:

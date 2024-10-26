@@ -10,6 +10,7 @@ import random
 from typing import Literal, Optional
 
 from element import Food, Weapon
+
 from pekascape.element import Character, Monster, Player
 from pekascape.element.base import GameObject, ItemsAccessMixin
 

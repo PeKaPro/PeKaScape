@@ -10,6 +10,7 @@ from random import randint
 from typing import TYPE_CHECKING, Optional, Self
 
 from pekascape.behaviour.battle import BasicBattleEngine
+
 from .base import GameObject, ItemsAccessMixin
 from .food import Food
 from .weapon import Weapon
